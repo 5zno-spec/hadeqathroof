@@ -70,16 +70,16 @@ main{max-width:600px;margin:0 auto}
 .bar i{display:block;height:100%;width:0;background:var(--star);border-radius:99px;transition:width .5s}
 
 /* بطاقات الحروف */
-.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;padding:8px 6px 12px}
-.cd{position:relative;aspect-ratio:1;display:grid;place-items:center;border:1px solid var(--line);border-radius:24px;font-size:4.2rem;line-height:1;padding-top:.2em;cursor:pointer;background:var(--tealS);box-shadow:0 5px 0 var(--line);transition:transform .15s,box-shadow .15s,opacity .25s,filter .25s}
+.cards{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;padding:8px 2px 12px}
+.cd{position:relative;aspect-ratio:1;display:grid;place-items:center;border:1px solid var(--line);border-radius:16px;font-size:clamp(1.7rem,8vw,2.7rem);line-height:1;padding-top:.15em;cursor:pointer;background:var(--tealS);box-shadow:0 3px 0 var(--line);transition:transform .15s,box-shadow .15s,opacity .25s,filter .25s}
 .cards .cd:nth-child(3n+2){background:var(--orgS)}
 .cards .cd:nth-child(3n){background:var(--yelS)}
 .cd:not(.done){opacity:.55;filter:saturate(.5)}
-.cd:active{transform:translateY(5px);box-shadow:none}
-.cd.lit{opacity:1;filter:none;transform:scale(1.1);z-index:1;box-shadow:0 0 0 4px #fff,0 0 0 8px var(--star),0 10px 24px #23324a33}
-.done::after{content:"";position:absolute;top:-8px;inset-inline-end:-6px;width:26px;height:26px;border-radius:50%;border:2px solid var(--gD);box-shadow:0 2px 0 var(--gD);
+.cd:active{transform:translateY(3px);box-shadow:none}
+.cd.lit{opacity:1;filter:none;transform:scale(1.1);z-index:1;box-shadow:0 0 0 3px #fff,0 0 0 6px var(--star),0 8px 18px #23324a33}
+.done::after{content:"";position:absolute;top:-6px;inset-inline-end:-5px;width:20px;height:20px;border-radius:50%;border:2px solid var(--gD);box-shadow:0 2px 0 var(--gD);
   background:var(--g) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5.5 12.5l4.2 4.2L18.5 7.8' fill='none' stroke='%23fff' stroke-width='3.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/70% no-repeat}
-.cd.done::after{width:28px;height:28px}
+.cd.done::after{width:20px;height:20px}
 .countrow{display:flex;justify-content:center;margin:4px 0 8px}
 
 /* تعلّم */
@@ -94,13 +94,14 @@ main{max-width:600px;margin:0 auto}
 .pop{animation:pop .3s ease-out}
 @keyframes pop{0%{transform:scale(.92);opacity:.5}100%{transform:none;opacity:1}}
 .actions{display:flex;gap:10px;justify-content:center;margin-bottom:14px}
-.grid{display:grid;gap:8px}
-.t{position:relative;border:1px solid var(--line);border-radius:16px;background:#fff;font-size:2rem;line-height:1.5;cursor:pointer;padding:0;aspect-ratio:1;transition:transform .1s,background .15s}
+.grid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+@media(min-width:480px){.cards,.grid{grid-template-columns:repeat(7,1fr)}}
+.t{position:relative;border:1px solid var(--line);border-radius:12px;background:#fff;font-size:clamp(1.4rem,6.5vw,2rem);line-height:1.5;cursor:pointer;padding:0;aspect-ratio:1;transition:transform .1s,background .15s}
 .t:active{transform:scale(.94)}
 .t:not([aria-pressed="true"]):not(.done){opacity:.6}
 .t.done{background:var(--tealS);border-color:#b9e4e2}
 .t[aria-pressed="true"]{background:var(--teal);border-color:var(--tealD);color:#fff;transform:scale(1.06)}
-.t.done::after{width:20px;height:20px;top:-7px;border-width:1.5px}
+.t.done::after{width:15px;height:15px;top:-5px;border-width:1.5px}
 
 /* العب */
 .toprow{display:flex;align-items:center;gap:10px;margin:2px 0 12px}
@@ -191,7 +192,7 @@ main{max-width:600px;margin:0 auto}
 .ins .x .ic{width:22px;height:22px}
 .ins .btn .ic{width:26px;height:26px}
 .hint{color:var(--mut);font-size:1.1rem;margin-top:14px}
-@media(max-width:380px){.big{font-size:5.4rem}.pe{font-size:4rem}.cd{font-size:3.4rem}.mc{font-size:3rem}}
+@media(max-width:380px){.big{font-size:5.4rem}.pe{font-size:4rem}.mc{font-size:3rem}}
 </style>
 </head>
 <body>
@@ -591,7 +592,6 @@ function setSection(s){
   curSec=s;
   cardGrid.innerHTML="";grid.innerHTML="";
   const ns=range(s);
-  grid.style.gridTemplateColumns="repeat(5,1fr)";
   ns.forEach(n=>{
     const c=document.createElement("button");
     c.className="cd";c.dataset.n=n;c.textContent=D[n][0];
