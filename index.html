@@ -5,7 +5,26 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#eefaff">
 <title>أصدقائي الحروف - لعبة تعلّم الحروف العربية</title>
-<meta name="description" content="لعبة تفاعلية لتعليم الأطفال الحروف العربية بالصوت والصورة">
+<meta name="description" content="لعبة تفاعلية لتعليم الأطفال الحروف العربية الـ 28 بالصوت والصورة: بطاقات ملوّنة واختبار لكل حرف ولعب ممتع، وتعمل دون إنترنت.">
+<link rel="canonical" href="https://5zno-spec.github.io/hadeqathroof/">
+<!-- معاينة الرابط في مواقع التواصل (واتساب، فيسبوك، إكس، تيليجرام...) -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="أصدقائي الحروف">
+<meta property="og:locale" content="ar_AR">
+<meta property="og:url" content="https://5zno-spec.github.io/hadeqathroof/">
+<meta property="og:title" content="أصدقائي الحروف - لعبة تعلّم الحروف العربية">
+<meta property="og:description" content="لعبة تفاعلية لتعليم الأطفال الحروف العربية الـ 28 بالصوت والصورة: بطاقات ملوّنة واختبار لكل حرف ولعب ممتع، وتعمل دون إنترنت.">
+<meta property="og:image" content="https://5zno-spec.github.io/hadeqathroof/img/og-image.jpg">
+<meta property="og:image:secure_url" content="https://5zno-spec.github.io/hadeqathroof/img/og-image.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="شعار أصدقائي الحروف: طفلان يقفزان فرحًا مع حروف أ ب ج د ملوّنة، وعبارة تعلّم الحروف بالصوت والصورة">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="أصدقائي الحروف - لعبة تعلّم الحروف العربية">
+<meta name="twitter:description" content="لعبة تفاعلية لتعليم الأطفال الحروف العربية الـ 28 بالصوت والصورة: بطاقات ملوّنة واختبار لكل حرف ولعب ممتع، وتعمل دون إنترنت.">
+<meta name="twitter:image" content="https://5zno-spec.github.io/hadeqathroof/img/og-image.jpg">
+<meta name="twitter:image:alt" content="شعار أصدقائي الحروف: طفلان يقفزان فرحًا مع حروف أ ب ج د ملوّنة، وعبارة تعلّم الحروف بالصوت والصورة">
 <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
 <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
 <link rel="manifest" href="manifest.webmanifest">
@@ -231,11 +250,14 @@ main{max-width:600px;margin:0 auto}
 @media(prefers-reduced-motion:reduce){.sp-logo{animation:none}}
 @keyframes spf{to{transform:scaleX(1)}}
 /* نافذة التثبيت */
-#install{position:fixed;inset:0;z-index:95;display:grid;place-items:center;padding:16px;background:#22305e73}
-.ins{position:relative;width:min(100%,300px);background:var(--bg);border:1px solid var(--line);border-radius:30px;padding:40px 18px 22px;box-shadow:0 20px 50px #0004;display:flex;flex-direction:column;align-items:center;gap:18px}
+/* نافذة التثبيت الزجاجية: الشعار وزر التثبيت فقط؛ تُغلق بلمسة خارجها */
+#install{position:fixed;inset:0;z-index:95;display:grid;place-items:center;padding:16px;background:#22305e26}
+.ins{position:relative;width:min(100%,300px);display:flex;flex-direction:column;align-items:center;gap:20px;padding:26px 22px 24px;border-radius:32px;background:linear-gradient(160deg,#ffffff8c,#ffffff40);border:1px solid #ffffffb3;box-shadow:inset 0 1px 0 #fff,0 24px 60px #22305e40;-webkit-backdrop-filter:blur(22px) saturate(170%);backdrop-filter:blur(22px) saturate(170%);animation:insIn .45s cubic-bezier(.2,1.4,.4,1) both}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.ins{background:#ffffffeb}}
+@keyframes insIn{0%{transform:scale(.85) translateY(14px);opacity:0}100%{transform:none;opacity:1}}
+@media(prefers-reduced-motion:reduce){.ins{animation:none}}
 .ins-logo{width:min(56vw,200px);height:auto;display:block}
-.ins .x{position:absolute;top:10px;inset-inline-start:10px;width:42px;height:42px}
-.ins .x .ic{width:22px;height:22px}
+.ins .btn{font-size:1.3rem;padding:12px 26px}
 .ins .btn .ic{width:26px;height:26px}
 .hint{color:var(--mut);font-size:1.1rem;margin-top:14px}
 @media(max-width:380px){.pe{font-size:4rem}.mc{font-size:3rem}}
@@ -371,7 +393,6 @@ main{max-width:600px;margin:0 auto}
 <!-- نافذة تثبيت التطبيق -->
 <div id="install" class="hide" role="dialog" aria-modal="true" aria-label="تثبيت التطبيق">
   <div class="ins">
-    <button class="ib x" id="insClose" aria-label="إغلاق"><span class="ic" data-ic="close"></span></button>
     <img class="ins-logo" src="img/logo.webp" width="200" height="200" alt="أصدقائي الحروف">
     <button class="btn main" id="insBtn"><span class="ic" data-ic="download"></span>تثبيت التطبيق</button>
   </div>
@@ -1016,13 +1037,13 @@ function renderAch(){
 if("serviceWorker" in navigator&&/^https?:$/.test(location.protocol)){
   window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
 }
-/* نافذة التثبيت: تظهر بعد ثانيتين من انتهاء شاشة التحميل،
+/* نافذة التثبيت: تظهر فور ظهور الرئيسية بعد شاشة التحميل،
    فقط حين يسمح المتصفح بالتثبيت ولم يكن التطبيق مثبتًا */
 let installEvt=null,splashDone=false,insTimer=0;
 const isInstalled=()=>matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
 function scheduleInstall(){
   clearTimeout(insTimer);
-  if(installEvt&&splashDone&&!isInstalled())insTimer=setTimeout(showInstall,2000);
+  if(installEvt&&splashDone&&curTab==="home"&&!isInstalled())insTimer=setTimeout(showInstall,350);
 }
 function showInstall(){
   if(!installEvt||isInstalled())return;
@@ -1045,7 +1066,6 @@ $("insBtn").onclick=async()=>{
   installEvt=null;   // حدث التثبيت يُستخدم مرة واحدة
   try{await p.prompt();await p.userChoice;}catch(e){}
 };
-$("insClose").onclick=hideInstall;
 $("install").onclick=e=>{if(e.target===$("install"))hideInstall();};
 window.addEventListener("appinstalled",()=>{installEvt=null;hideInstall();});
 
