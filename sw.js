@@ -1,5 +1,5 @@
 /* يعمل التطبيق بلا إنترنت: تُخزَّن الملفات عند أول زيارة ثم تُقدَّم من الجهاز */
-const VERSION = 'v3';
+const VERSION = 'v4';
 const CACHE = 'harfi-' + VERSION;
 const CORE = [
   './', 'index.html', 'manifest.webmanifest',
