@@ -109,12 +109,26 @@ main{max-width:600px;margin:0 auto}
 .split{display:grid;grid-template-columns:1fr 1fr;gap:12px;background:#fff;border:1px solid var(--line);border-radius:30px;box-shadow:0 10px 30px #22305e14;padding:14px;margin:4px 0 14px}
 .split>div{border-radius:22px;padding:10px 4px 12px;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:220px}
 .lh{background:var(--tealS)}
-.ph{background:var(--orgS)}
+.ph{background:var(--orgS);position:relative}
+/* كلمتان للحرف: المس الصورة للتبديل، والنقطتان تدلّان على أي الكلمتين ظاهرة */
+.ph.tap{cursor:pointer;user-select:none}
+.ph.tap:focus-visible{outline:3px solid var(--org);outline-offset:3px}
+.ph.flip .pe{animation:flip .35s cubic-bezier(.3,1.5,.5,1)}
+@keyframes flip{0%{transform:scale(.6) rotate(-10deg);opacity:0}100%{transform:none;opacity:1}}
+.pdots{display:flex;gap:6px;justify-content:center;margin-top:6px}
+.pdots i{width:9px;height:9px;border-radius:50%;background:#ec5a9e55;transition:background .2s,transform .2s}
+.pdots i.on{background:var(--org);transform:scale(1.25)}
+@media(prefers-reduced-motion:reduce){.ph.flip .pe{animation:none}}
 .lh{padding:8px}
 .big{flex:1;width:100%;min-height:0;color:var(--tealD)}
 .big svg{width:100%;height:100%;display:block}
 .pe{font-size:5rem;line-height:1.2}
 .pw{font-size:1.9rem;margin-top:2px}
+/* صور الكلمات بدل الرموز التعبيرية */
+.pe img,.q .e img,.mc img{display:block;margin:0 auto;object-fit:contain;-webkit-user-drag:none;user-select:none}
+.pe img{width:min(100%,170px);height:auto;aspect-ratio:1}
+.q .e img{width:150px;height:150px}
+.mc img{width:84%;height:84%}
 .pop{animation:pop .3s ease-out}
 @keyframes pop{0%{transform:scale(.92);opacity:.5}100%{transform:none;opacity:1}}
 .actions{display:flex;gap:10px;justify-content:center;margin-bottom:14px}
@@ -263,7 +277,7 @@ main{max-width:600px;margin:0 auto}
   <section id="learn" class="hide">
     <div class="split">
       <div class="lh"><div class="big" id="big" role="img" data-big="1"></div></div>
-      <div class="ph"><div class="pe" id="pe">🐰</div><div class="pw" id="pw">أرنب</div></div>
+      <div class="ph" id="ph"><div class="pe" id="pe">🐰</div><div class="pw" id="pw">أرنب</div><div class="pdots hide" id="pdots" aria-hidden="true"><i></i><i></i></div></div>
     </div>
     <div class="actions">
       <button class="btn org" id="say"><span class="ic" data-ic="sound"></span>استمع</button>
@@ -366,16 +380,37 @@ main{max-width:600px;margin:0 auto}
 <script>
 /* ===== البيانات ===== */
 const D=[
-["أ","ألف","أرنب","🐰"],["ب","باء","بطة","🦆"],["ت","تاء","تفاحة","🍎"],["ث","ثاء","ثعلب","🦊"],
-["ج","جيم","جمل","🐪"],["ح","حاء","حصان","🐴"],["خ","خاء","خروف","🐑"],["د","دال","دجاجة","🐔"],
+["أ","ألف","أرنب","🐰"],["ب","باء","بقرة","🐄"],["ت","تاء","تفاحة","🍎"],["ث","ثاء","ثعلب","🦊"],
+["ج","جيم","جمل","🐪"],["ح","حاء","حمامة","🕊️"],["خ","خاء","خروف","🐑"],["د","دال","دجاجة","🐔"],
 ["ذ","ذال","ذرة","🌽"],["ر","راء","ريشة","🪶"],["ز","زاي","زرافة","🦒"],["س","سين","سمكة","🐟"],
-["ش","شين","شمس","☀️"],["ص","صاد","صقر","🦅"],["ض","ضاد","ضفدع","🐸"],["ط","طاء","طائرة","✈️"],
-["ظ","ظاء","ظرف","✉️"],["ع","عين","عنب","🍇"],["غ","غين","غيمة","☁️"],["ف","فاء","فيل","🐘"],
-["ق","قاف","قمر","🌙"],["ك","كاف","كتاب","📖"],["ل","لام","ليمون","🍋"],["م","ميم","موزة","🍌"],
-["ن","نون","نحلة","🐝"],["ه","هاء","هدية","🎁"],["و","واو","وردة","🌹"],["ي","ياء","يد","✋"]
+["ش","شين","شمس","☀️"],["ص","صاد","صقر","🦅"],["ض","ضاد","ضبع","🐾"],["ط","طاء","طائرة","✈️"],
+["ظ","ظاء","ظرف","✉️"],["ع","عين","عنب","🍇"],["غ","غين","غزال","🦌"],["ف","فاء","فراشة","🦋"],
+["ق","قاف","قمر","🌙"],["ك","كاف","كلب","🐶"],["ل","لام","ليمون","🍋"],["م","ميم","موزة","🍌"],
+["ن","نون","نحلة","🐝"],["ه","هاء","هدية","🎁"],["و","واو","وردة","🌹"],["ي","ياء","يربوع","🐭"]
 ];
 const AUDIO=["01_Alef","02_baa","03_taa","04_thaa","05_geem","06_haa","07_khaa","08_dal","09_zal","10_raa","11_zay","12_seen","13_sheen","14_sad","15_dad","16_taaa","17_zaa","18_ayn","19_ghyn","20_faa","21_qaf","22_kaf","23_lam","24_mem","25_noon","26_haa","27_waw","28_yaa"];
 const asset=f=>"audio/"+f;
+/* الكلمة الثانية لكل حرف (اختيارية): رقم الحرف ← [الكلمة، رمز تعبيري احتياطي] */
+const W2={0:["أسد","🦁"],3:["ثور","🐂"],14:["ضفدع","🐸"],21:["كتاب","📖"],27:["يد","✋"]};
+/* صور الكلمات في img/words باسم ملف صوت الحرف: الأولى 02_baa.webp والثانية 02_baa_2.webp.
+   الحرف الذي ليس له صورة يُعرض برمزه التعبيري */
+const WIMG=new Set([0,1,3,4,5,6,10,11,14,18,19,21,24,27]),WIMG2=new Set([0,3]);
+const wimg=(n,k)=>"img/words/"+AUDIO[n]+(k?"_2":"")+".webp";
+/* كلمات الحرف: إن كان للحرف صور تُعرض الكلمات المصوّرة فقط (حتى لا يختلط الرسم بالرموز)،
+   وإلا تُعرض الكلمة الأولى برمزها التعبيري */
+function words(n){
+  const v=[{w:D[n][2],e:D[n][3],img:WIMG.has(n)?wimg(n,0):""}];
+  if(W2[n])v.push({w:W2[n][0],e:W2[n][1]||"",img:WIMG2.has(n)?wimg(n,1):""});
+  const pics=v.filter(x=>x.img);
+  return pics.length?pics:[v[0]];
+}
+const word=(n,k)=>{const v=words(n);return v[k]||v[0];};
+const anyWord=n=>Math.floor(Math.random()*words(n).length);
+function showPic(el,n,k=0){
+  const v=word(n,k);
+  if(v.img)el.innerHTML='<img src="'+v.img+'" alt="" draggable="false">';
+  else el.textContent=v.e;
+}
 const SECS=[{from:0,to:27,label:"(أ - ي)"}];   // كل الحروف في قسم واحد
 const secOf=()=>0;
 const range=s=>Array.from({length:SECS[s].to-SECS[s].from+1},(_,k)=>SECS[s].from+k);
@@ -524,7 +559,7 @@ function playClip(src,text,onEnd){
   safety(3500);
 }
 const sayLetter=(n,onEnd)=>playClip(asset(AUDIO[n]+".mp3"),"حرف "+D[n][1],onEnd);
-const sayWord=n=>synth(D[n][2]);
+const sayWord=(n,k=0)=>synth(word(n,k).w);
 
 /* فقاعة تشجيع عند الإجابة الصحيحة: عبارة عشوائية (لا تتكرر مرتين متتاليتين) تظهر ويُسمع صوتها بعد نغمة النجاح */
 let lastPraise=-1,praiseEl=null,praiseT=0,praiseA=0;
@@ -679,12 +714,31 @@ function pick(n,quiet){
   [...grid.children].forEach(b=>b.setAttribute("aria-pressed",+b.dataset.n===n));
   setLetter($("big"),D[n][0]);
   $("big").setAttribute("aria-label",LN(n));
-  $("pe").textContent=D[n][3];
-  $("pw").textContent=D[n][2];
+  pv=0;renderPv();
   [$("big").parentNode,$("pe").parentNode].forEach(el=>{el.classList.remove("pop");void el.offsetWidth;el.classList.add("pop");});
   persist();
-  if(!quiet){tone([660]);sayLetter(n,()=>sayWord(n));}
+  if(!quiet){tone([660]);sayLetter(n,()=>sayWord(n,pv));}
 }
+/* صورة الكلمة في صفحة التعلّم: إن كان للحرف كلمتان يتبدّل بينهما الطفل بلمسة على الصورة */
+let pv=0;
+function renderPv(){
+  const two=words(cur).length>1,ph=$("ph");
+  showPic($("pe"),cur,pv);
+  $("pw").textContent=word(cur,pv).w;
+  $("pdots").classList.toggle("hide",!two);
+  [...$("pdots").children].forEach((d,i)=>d.classList.toggle("on",i===pv));
+  ph.classList.toggle("tap",two);
+  if(two){ph.setAttribute("role","button");ph.tabIndex=0;ph.setAttribute("aria-label",word(cur,pv).w+"، المس لرؤية الكلمة الأخرى");}
+  else{ph.removeAttribute("role");ph.removeAttribute("tabindex");ph.removeAttribute("aria-label");}
+}
+function flipPv(){
+  if(words(cur).length<2)return;
+  pv=1-pv;renderPv();
+  const ph=$("ph");ph.classList.remove("flip");void ph.offsetWidth;ph.classList.add("flip");
+  stopAudio();sayWord(cur,pv);
+}
+$("ph").onclick=flipPv;
+$("ph").onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();flipPv();}};
 let askTarget=null;
 function requestPick(n){
   if(n!==cur&&!studied.has(cur)){askTarget=n;return showAsk();}
@@ -702,7 +756,7 @@ $("askClose").onclick=closeAsk;
 $("ask").onclick=e=>{if(e.target===$("ask"))closeAsk();};
 $("askTest").onclick=()=>{hideAsk();askTarget=null;openMini();};
 $("askSkip").onclick=()=>{hideAsk();if(askTarget!==null)pick(askTarget);askTarget=null;};
-$("say").onclick=()=>{sayLetter(cur,()=>sayWord(cur));};
+$("say").onclick=()=>{sayLetter(cur,()=>sayWord(cur,pv));};
 
 /* ===== اختبار الحرف: ٥ جولات (صورة، صوت، صورة، صوت، صورة) ===== */
 const starCount=s=>s>=5?3:s>=3?2:s>=1?1:0;
@@ -742,14 +796,15 @@ function nextMini(){
   list.forEach(c=>{
     const b=document.createElement("button");
     b.className="mc"+(pic?"":" ltr");
-    if(pic)b.textContent=D[c][3];else setLetter(b,D[c][0]);
-    b.setAttribute("aria-label",pic?D[c][2]:LN(c));
+    const k=pic?anyWord(c):0;
+    if(pic)showPic(b,c,k);else setLetter(b,D[c][0]);
+    b.setAttribute("aria-label",pic?word(c,k).w:LN(c));
     b.onclick=()=>{
       if(mLock||b.disabled)return;
       if(c===mN){
         mLock=true;if(!mMiss)mFirst++;
         b.classList.add("ok");tone([523,659,784]);
-        $("mMsg").textContent="صحيح! "+(pic?D[mN][2]:LN(mN));
+        $("mMsg").textContent="صحيح! "+(pic?word(mN,k).w:LN(mN));
         praise();
         mTimer=setTimeout(nextMini,1800);
       }else{
@@ -843,7 +898,7 @@ window.addEventListener("popstate",e=>{
 });
 
 /* ===== العب مع الحروف ===== */
-let score=0,qi=0,answer=0,locked=false,done=false,nextT=0,qList=[],pending=false;   // pending: أجاب الطفل صحيحًا وننتظر السؤال التالي
+let qv=0,score=0,qi=0,answer=0,locked=false,done=false,nextT=0,qList=[],pending=false;   // pending: أجاب الطفل صحيحًا وننتظر السؤال التالي
 const playPool=()=>[...studied];
 function startGame(){
   clearTimeout(nextT);
@@ -870,12 +925,12 @@ function nextQ(){
   const a=pool[Math.floor(Math.random()*pool.length)];
   buildQ(a,shuffle([a,...shuffle(pool.filter(k=>k!==a)).slice(0,2)]));
   persist();
-  setTimeout(()=>{if(curTab==="play")synth("ما أول حرف في كلمة "+D[answer][2]);},300);
+  setTimeout(()=>{if(curTab==="play")synth("ما أول حرف في كلمة "+word(answer,qv).w);},300);
 }
 /* يبني السؤال الحالي من الإجابة وقائمة الخيارات (تُستخدم أيضًا عند استرجاع لعبة محفوظة) */
 function buildQ(a,list){
   locked=false;answer=a;qList=list;
-  $("qe").textContent=D[answer][3];$("qw").textContent=D[answer][2];
+  qv=anyWord(answer);showPic($("qe"),answer,qv);$("qw").textContent=word(answer,qv).w;
   const c=document.querySelector(".card.q");c.classList.remove("pop");void c.offsetWidth;c.classList.add("pop");
   $("msg").textContent="";
   $("opts").innerHTML="";
@@ -902,7 +957,7 @@ function choose(b,k){
     $("msg").textContent="حاول مرة أخرى";
   }
 }
-$("qsay").onclick=()=>synth("ما أول حرف في كلمة "+D[answer][2]);
+$("qsay").onclick=()=>synth("ما أول حرف في كلمة "+word(answer,qv).w);
 function finish(){
   done=true;pending=false;if(score>best)best=score;persist();
   $("round").classList.add("hide");$("result").classList.remove("hide");

@@ -7,6 +7,7 @@ const CORE = [
   './', 'index.html', 'manifest.webmanifest',
   'audio/praise/a7sant.mp3', 'audio/praise/rae3.mp3', 'audio/praise/barak-allah-feek.mp3', 'audio/praise/batal.mp3', 'audio/praise/3zeem.mp3', 'audio/praise/mmtaz.mp3',
   ...LETTERS.map(n => 'audio/' + n + '.mp3'),
+  ...['01_Alef','01_Alef_2','02_baa','04_thaa','04_thaa_2','05_geem','06_haa','07_khaa','11_zay','12_seen','15_dad','19_ghyn','20_faa','22_kaf','25_noon','28_yaa'].map(n => 'img/words/' + n + '.webp'),
   'img/logo.webp', 'img/favicon-32.png', 'img/apple-touch-icon.png', 'img/icon-192.png', 'img/icon-512.png', 'img/icon-maskable-192.png', 'img/icon-maskable-512.png'
 ];
 const FONT_HOSTS = ['fonts.googleapis.com', 'fonts.gstatic.com'];
