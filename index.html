@@ -87,8 +87,9 @@ main{max-width:600px;margin:0 auto}
 .split>div{border-radius:22px;padding:10px 4px 12px;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:220px}
 .lh{background:var(--tealS)}
 .ph{background:var(--orgS)}
-.big{font-size:6.6rem;line-height:1.5;color:var(--tealD)}
-.lname{font-size:1.7rem}
+.lh{padding:8px}
+.big{flex:1;width:100%;min-height:0;color:var(--tealD)}
+.big svg{width:100%;height:100%;display:block}
 .pe{font-size:5rem;line-height:1.2}
 .pw{font-size:1.9rem;margin-top:2px}
 .pop{animation:pop .3s ease-out}
@@ -195,7 +196,7 @@ main{max-width:600px;margin:0 auto}
 .ins .x .ic{width:22px;height:22px}
 .ins .btn .ic{width:26px;height:26px}
 .hint{color:var(--mut);font-size:1.1rem;margin-top:14px}
-@media(max-width:380px){.big{font-size:5.4rem}.pe{font-size:4rem}.mc{font-size:3rem}}
+@media(max-width:380px){.pe{font-size:4rem}.mc{font-size:3rem}}
 </style>
 </head>
 <body>
@@ -236,7 +237,7 @@ main{max-width:600px;margin:0 auto}
   <!-- تعلّم حرف -->
   <section id="learn" class="hide">
     <div class="split">
-      <div class="lh"><div class="big" id="big">أ</div><div class="lname" id="lname">الألف</div></div>
+      <div class="lh"><div class="big" id="big" role="img" data-big="1"></div></div>
       <div class="ph"><div class="pe" id="pe">🐰</div><div class="pw" id="pw">أرنب</div></div>
     </div>
     <div class="actions">
@@ -400,12 +401,12 @@ function letterMetrics(ch){
   const m=c.measureText(ch),l=m.actualBoundingBoxLeft,r=m.actualBoundingBoxRight,a=m.actualBoundingBoxAscent,d=m.actualBoundingBoxDescent;
   return LM[ch]={cx:(r-l)/2,cy:(a-d)/2,w:l+r,h:a+d};
 }
-function letterSvg(ch){
-  const m=letterMetrics(ch),s=Math.min(.64,76/Math.max(m.w,1),76/Math.max(m.h,1));
+function letterSvg(ch,big){
+  const m=letterMetrics(ch),L=big?90:76,s=Math.min(big?.85:.64,L/Math.max(m.w,1),L/Math.max(m.h,1));
   return '<svg viewBox="0 0 100 100" aria-hidden="true"><text x="'+(50-m.cx*s).toFixed(2)+'" y="'+(50+m.cy*s).toFixed(2)+'" text-anchor="middle" font-size="'+(100*s).toFixed(2)+'" font-weight="700" fill="currentColor">'+ch+'</text></svg>';
 }
-function setLetter(el,ch){el.dataset.l=ch;el.innerHTML=letterSvg(ch);}
-function paintLetters(){document.querySelectorAll("[data-l]").forEach(el=>{el.innerHTML=letterSvg(el.dataset.l);});}
+function setLetter(el,ch){el.dataset.l=ch;el.innerHTML=letterSvg(ch,el.dataset.big);}
+function paintLetters(){document.querySelectorAll("[data-l]").forEach(el=>{el.innerHTML=letterSvg(el.dataset.l,el.dataset.big);});}
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{for(const k in LM)delete LM[k];paintLetters();});
 const stars=(n,total=3)=>Array.from({length:total},(_,k)=>'<span class="ic">'+ICONS.star(k<n)+'</span>').join("");
 
@@ -646,8 +647,8 @@ function pick(n,quiet){
   cur=n;
   if(secOf(n)!==curSec)setSection(secOf(n));
   [...grid.children].forEach(b=>b.setAttribute("aria-pressed",+b.dataset.n===n));
-  $("big").textContent=D[n][0];
-  $("lname").textContent=LN(n);
+  setLetter($("big"),D[n][0]);
+  $("big").setAttribute("aria-label",LN(n));
   $("pe").textContent=D[n][3];
   $("pw").textContent=D[n][2];
   [$("big").parentNode,$("pe").parentNode].forEach(el=>{el.classList.remove("pop");void el.offsetWidth;el.classList.add("pop");});
