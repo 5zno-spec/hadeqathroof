@@ -1,5 +1,5 @@
 /* يعمل التطبيق بلا إنترنت: تُخزَّن الملفات عند أول زيارة ثم تُقدَّم من الجهاز */
-const VERSION = 'v4';
+const VERSION = 'v5';
 const CACHE = 'harfi-' + VERSION;
 const CORE = [
   './', 'index.html', 'manifest.webmanifest',
@@ -35,33 +35,48 @@ async function rangeResponse(req, res){
   });
 }
 
+/* مفتاح التخزين: الرابط دون الاستعلام (?...) حتى لا تتكرر نسخ الملف نفسه */
+const keyOf = url => new Request(url.origin + url.pathname);
+
+/* الصفحة: من الشبكة أولًا (فيرى المستخدم آخر نسخة فورًا)، ومن الجهاز عند انقطاع الإنترنت أو بطئه */
+async function page(req, url, cache){
+  const fromCache = async () =>
+    (await cache.match(keyOf(url))) || (await cache.match('./')) || (await cache.match('index.html'));
+  try{
+    const res = await Promise.race([
+      fetch(req),
+      new Promise((_, rej) => setTimeout(() => rej(new Error('slow')), 3000))
+    ]);
+    if(res && res.status === 200) cache.put(keyOf(url), res.clone()).catch(() => {});
+    return res;
+  }catch(err){
+    return (await fromCache()) || new Response('', {status: 504, statusText: 'Offline'});
+  }
+}
+
+/* بقية الملفات: من الجهاز أولًا ولا يُعاد تنزيلها ما دامت محفوظة (تتجدد عند تغيير VERSION).
+   عند أول طلب يُنزَّل الملف كاملًا (لا جزءًا) ليُحفظ، ثم يُقتطع منه ما طلبه Safari */
+async function asset(req, url, sameOrigin, cache){
+  const key = sameOrigin ? keyOf(url) : req;
+  let res = await cache.match(key, {ignoreVary: true});
+  if(!res){
+    try{
+      res = await fetch(sameOrigin ? url.origin + url.pathname : req);
+    }catch(err){
+      return new Response('', {status: 504, statusText: 'Offline'});
+    }
+    if(res && (res.status === 200 || res.type === 'opaque')) cache.put(key, res.clone()).catch(() => {});
+  }
+  return req.headers.get('range') ? rangeResponse(req, res) : res;
+}
+
 self.addEventListener('fetch', e => {
   const req = e.request;
   if(req.method !== 'GET') return;
   const url = new URL(req.url);
   const sameOrigin = url.origin === self.location.origin;
   if(!sameOrigin && !FONT_HOSTS.includes(url.hostname)) return;
-
-  e.respondWith((async () => {
-    const cache = await caches.open(CACHE);
-    const cached = await cache.match(req, {ignoreSearch: sameOrigin, ignoreVary: true});
-    const refresh = fetch(req).then(res => {
-      /* لا نخزّن الاستجابات الجزئية (206) لأن cache.put يرفضها */
-      if(res && (res.status === 200 || res.type === 'opaque')) cache.put(req, res.clone()).catch(() => {});
-      return res;
-    });
-    if(cached){
-      refresh.catch(() => {});                       // تحديث هادئ في الخلفية عند وجود إنترنت
-      return req.headers.get('range') ? rangeResponse(req, cached) : cached;
-    }
-    try{
-      return await refresh;
-    }catch(err){
-      if(req.mode === 'navigate'){
-        const page = await cache.match('index.html');
-        if(page) return page;
-      }
-      return new Response('', {status: 504, statusText: 'Offline'});
-    }
-  })());
+  e.respondWith(caches.open(CACHE).then(cache =>
+    req.mode === 'navigate' ? page(req, url, cache) : asset(req, url, sameOrigin, cache)
+  ));
 });
