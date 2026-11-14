@@ -9,6 +9,7 @@
 <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
 <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
 <link rel="manifest" href="manifest.webmanifest">
+<link rel="preload" as="image" href="img/logo.webp">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap" rel="stylesheet">
@@ -50,9 +51,8 @@ main{max-width:600px;margin:0 auto}
 .btn.sm{padding:6px 16px;font-size:1.05rem}
 
 /* الرئيسية */
-.hero{padding:2px 0 14px}
-.badge{width:130px;height:130px;margin:4px auto 8px;border-radius:50%;background:var(--teal);color:#fff;font-size:4.8rem;line-height:1;display:grid;place-items:center;padding-top:.28em;box-shadow:0 8px 0 var(--tealD),0 18px 30px #0b777533;animation:bob 3.2s ease-in-out infinite}
-@keyframes bob{50%{transform:translateY(-8px)}}
+.hero{padding:2px 0 10px}
+.hero-logo{display:block;width:min(74vw,300px);height:auto;margin:0 auto}
 .hero h1{margin:0;font-size:2.5rem}
 .hero p{margin:0;color:var(--mut);font-size:1.2rem}
 .menu{display:flex;flex-direction:column;gap:12px;max-width:420px;margin:0 auto}
@@ -185,13 +185,17 @@ main{max-width:600px;margin:0 auto}
 /* شاشة التحميل */
 #splash{position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;background:var(--bg);transition:opacity .5s}
 #splash.out{opacity:0;pointer-events:none}
-.sp-track{width:min(56vw,240px);height:12px;border-radius:99px;background:#fff;border:1px solid var(--line);overflow:hidden}
-.sp-fill{width:100%;height:100%;border-radius:99px;background:var(--org);transform:scaleX(0);transform-origin:right;animation:spf 1.6s ease-out forwards}
+.sp-logo{width:min(78vw,300px);height:auto;display:block;animation:logoIn 1s cubic-bezier(.2,1.5,.4,1) both,logoFloat 2.6s ease-in-out 1s infinite;filter:drop-shadow(0 12px 18px #23324a22)}
+@keyframes logoIn{0%{transform:scale(.4) rotate(-8deg);opacity:0}60%{transform:scale(1.08) rotate(2deg);opacity:1}100%{transform:none;opacity:1}}
+@keyframes logoFloat{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-9px) scale(1.03)}}
+.sp-track{width:min(64vw,260px);height:14px;border-radius:99px;background:#fff;border:1px solid var(--line);overflow:hidden}
+.sp-fill{width:100%;height:100%;border-radius:99px;background:linear-gradient(90deg,#ff8fb8,#ff5c9a);transform:scaleX(0);transform-origin:right;animation:spf 5s linear forwards}
+@media(prefers-reduced-motion:reduce){.sp-logo{animation:none}}
 @keyframes spf{to{transform:scaleX(1)}}
 /* نافذة التثبيت */
 #install{position:fixed;inset:0;z-index:95;display:grid;place-items:center;padding:16px;background:#23324a73}
 .ins{position:relative;width:min(100%,300px);background:var(--bg);border:1px solid var(--line);border-radius:30px;padding:40px 18px 22px;box-shadow:0 20px 50px #0004;display:flex;flex-direction:column;align-items:center;gap:18px}
-.ins .badge{width:96px;height:96px;font-size:3.6rem;margin:0;animation:none}
+.ins-logo{width:min(56vw,200px);height:auto;display:block}
 .ins .x{position:absolute;top:10px;inset-inline-start:10px;width:42px;height:42px}
 .ins .x .ic{width:22px;height:22px}
 .ins .btn .ic{width:26px;height:26px}
@@ -201,7 +205,7 @@ main{max-width:600px;margin:0 auto}
 </head>
 <body>
 <div id="splash" role="progressbar" aria-label="جارٍ التحميل" aria-valuemin="0" aria-valuemax="100">
-  <div class="hero"><div class="badge">أ</div><h1>حروفي</h1></div>
+  <img class="sp-logo" src="img/logo.webp" width="300" height="300" alt="أصدقائي الحروف" fetchpriority="high" decoding="sync">
   <div class="sp-track"><div class="sp-fill"></div></div>
 </div>
 <div class="bgl" id="bgl" aria-hidden="true"></div>
@@ -216,9 +220,7 @@ main{max-width:600px;margin:0 auto}
   <!-- الرئيسية -->
   <section id="home">
     <div class="hero">
-      <div class="badge">أ</div>
-      <h1>حروفي</h1>
-      <p>تعلّم الحروف العربية بالصوت والصورة</p>
+      <img class="hero-logo" src="img/logo.webp" width="300" height="300" alt="أصدقائي الحروف">
     </div>
     <nav class="menu">
       <button class="mbtn" id="hb0"><i><span class="ic" data-ic="book" data-c="#2cc4bf"></span></i><b>الحروف <small>(أ - ي)</small></b><span class="ic ch" data-ic="chev"></span></button>
@@ -333,7 +335,7 @@ main{max-width:600px;margin:0 auto}
 <div id="install" class="hide" role="dialog" aria-modal="true" aria-label="تثبيت التطبيق">
   <div class="ins">
     <button class="ib x" id="insClose" aria-label="إغلاق"><span class="ic" data-ic="close"></span></button>
-    <div class="badge">أ</div>
+    <img class="ins-logo" src="img/logo.webp" width="200" height="200" alt="أصدقائي الحروف">
     <button class="btn main" id="insBtn"><span class="ic" data-ic="download"></span>تثبيت حروفي</button>
   </div>
 </div>
@@ -970,14 +972,14 @@ applyMute();
 setSection(curSec);
 pick(cur,true);
 show("home");
-/* شاشة التحميل تختفي بعد ثانيتين تقريبًا */
+/* شاشة التحميل: شريط التقدم الوردي يمتلئ من اليمين خلال ٥ ثوانٍ ثم تظهر الرئيسية */
 setTimeout(()=>{
   const sp=$("splash");
   sp.classList.add("out");
   setTimeout(()=>sp.remove(),600);
   splashDone=true;
   scheduleInstall();
-},1800);
+},5000);
 </script>
 </body>
 </html>
