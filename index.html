@@ -216,9 +216,7 @@ main{max-width:600px;margin:0 auto}
       <p>تعلّم الحروف العربية بالصوت والصورة</p>
     </div>
     <nav class="menu">
-      <button class="mbtn" id="hb0"><i><span class="ic" data-ic="book" data-c="#2cc4bf"></span></i><b>الحروف <small>(أ - ر)</small></b><span class="ic ch" data-ic="chev"></span></button>
-      <button class="mbtn" id="hb1"><i><span class="ic" data-ic="book" data-c="#2cc4bf"></span></i><b>الحروف <small>(ز - غ)</small></b><span class="ic ch" data-ic="chev"></span></button>
-      <button class="mbtn" id="hb2"><i><span class="ic" data-ic="book" data-c="#2cc4bf"></span></i><b>الحروف <small>(ف - ي)</small></b><span class="ic ch" data-ic="chev"></span></button>
+      <button class="mbtn" id="hb0"><i><span class="ic" data-ic="book" data-c="#2cc4bf"></span></i><b>الحروف <small>(أ - ي)</small></b><span class="ic ch" data-ic="chev"></span></button>
       <button class="mbtn o" id="hb3"><i><span class="ic" data-ic="game"></span></i><b>العب مع الحروف</b><span class="ic ch" data-ic="chev"></span></button>
       <button class="mbtn y" id="hb4"><i><span class="ic" data-ic="trophy"></span></i><b>إنجازاتي</b><span class="ic ch" data-ic="chev"></span></button>
     </nav>
@@ -348,8 +346,8 @@ const D=[
 ];
 const AUDIO=["01_Alef","02_baa","03_taa","04_thaa","05_geem","06_haa","07_khaa","08_dal","09_zal","10_raa","11_zay","12_seen","13_sheen","14_sad","15_dad","16_taaa","17_zaa","18_ayn","19_ghyn","20_faa","21_qaf","22_kaf","23_lam","24_mem","25_noon","26_haa","27_waw","28_yaa"];
 const asset=f=>"audio/"+f;
-const SECS=[{from:0,to:9,label:"(أ - ر)"},{from:10,to:18,label:"(ز - غ)"},{from:19,to:27,label:"(ف - ي)"}];
-const secOf=n=>n<=9?0:n<=18?1:2;
+const SECS=[{from:0,to:27,label:"(أ - ي)"}];   // كل الحروف في قسم واحد
+const secOf=()=>0;
 const range=s=>Array.from({length:SECS[s].to-SECS[s].from+1},(_,k)=>SECS[s].from+k);
 const LN=n=>"ال"+D[n][1];
 /* عبارات التشجيع: لكل عبارة ملف صوتي في audio/praise */
@@ -542,7 +540,7 @@ function goCards(s){
   else go();
 }
 $("homeBtn").onclick=()=>{const d=history.state&&history.state.depth;if(d)history.go(-d);else show("home");};
-[0,1,2].forEach(s=>$("hb"+s).onclick=()=>{setSection(s);enter("cards",s);});
+$("hb0").onclick=()=>{setSection(0);enter("cards",0);};
 $("hb3").onclick=()=>enter("play");
 $("hb4").onclick=()=>enter("ach");
 $("toCards").onclick=()=>goCards(secOf(cur));
