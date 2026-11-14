@@ -71,7 +71,7 @@ main{max-width:600px;margin:0 auto}
 
 /* بطاقات الحروف */
 .cards{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;padding:8px 2px 12px}
-.cd{position:relative;aspect-ratio:1;display:grid;place-items:center;border:1px solid var(--line);border-radius:16px;font-size:clamp(1.7rem,8vw,2.7rem);line-height:1;padding-top:.15em;cursor:pointer;background:var(--tealS);box-shadow:0 3px 0 var(--line);transition:transform .15s,box-shadow .15s,opacity .25s,filter .25s}
+.cd{position:relative;aspect-ratio:1;display:grid;place-items:center;border:1px solid var(--line);border-radius:16px;font-size:clamp(1.7rem,8vw,2.7rem);line-height:1;padding:0;cursor:pointer;background:var(--tealS);box-shadow:0 3px 0 var(--line);transition:transform .15s,box-shadow .15s,opacity .25s,filter .25s}
 .cards .cd:nth-child(3n+2){background:var(--orgS)}
 .cards .cd:nth-child(3n){background:var(--yelS)}
 .cd:not(.done){opacity:.55;filter:saturate(.5)}
@@ -139,7 +139,10 @@ main{max-width:600px;margin:0 auto}
 .alist{display:flex;flex-direction:column;gap:8px}
 .arow{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;width:100%;padding:8px 12px;border:1px solid var(--line);border-radius:18px;background:#fff;cursor:pointer;text-align:start;transition:transform .08s}
 .arow:active{transform:scale(.98)}
-.arow .al{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;font-size:1.9rem;line-height:1;padding-top:.15em;background:var(--tealS)}
+.arow .al{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;font-size:1.9rem;line-height:1;background:var(--tealS)}
+/* الحرف يُرسم داخل svg ويُوسَّط بحدود شكله الفعلي لا بمقاييس الخط */
+.cd svg,.t svg,.mc svg,.al svg{width:100%;height:100%;display:block}
+.opts button svg{width:76px;height:76px;display:block;margin:0 auto}
 .arow.todo .al{background:#f4efe3;color:#a7a08f}
 .arow .mid{display:flex;flex-direction:column;gap:6px;min-width:0}
 .arow .nm{font-size:1.1rem}
@@ -163,7 +166,7 @@ main{max-width:600px;margin:0 auto}
 .mq{font-size:1.55rem;margin:8px 0 12px;line-height:1.5}
 .mcards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .mc{border:1px solid var(--line);border-radius:22px;background:#fff;cursor:pointer;aspect-ratio:1;display:grid;place-items:center;padding:0;font-size:3.6rem;line-height:1;box-shadow:0 5px 0 var(--line);transition:transform .1s,box-shadow .1s}
-.mc.ltr{font-size:3.2rem;color:var(--teal);padding-top:.2em}
+.mc.ltr{font-size:3.2rem;color:var(--teal)}
 .mc:active{transform:translateY(5px);box-shadow:none}
 .mmsg{min-height:2rem;margin-top:12px;font-size:1.35rem}
 .mres h3{margin:8px 0 2px;font-size:2.2rem}
@@ -387,6 +390,23 @@ function fillIcons(root=document){
     if(f){el.innerHTML=f(el.dataset.c);el.dataset.done=1;}
   });
 }
+/* توسيط الحرف: نقيس حدود شكله الفعلي (لا مربع الخط) ونرسمه داخل svg بحيث يقع مركز الشكل في مركز المربع */
+const LM={};
+function letterMetrics(ch){
+  if(LM[ch])return LM[ch];
+  const c=letterMetrics.c||(letterMetrics.c=document.createElement("canvas").getContext("2d"));
+  c.font="700 100px "+getComputedStyle(document.body).fontFamily;
+  c.textAlign="center";c.textBaseline="alphabetic";
+  const m=c.measureText(ch),l=m.actualBoundingBoxLeft,r=m.actualBoundingBoxRight,a=m.actualBoundingBoxAscent,d=m.actualBoundingBoxDescent;
+  return LM[ch]={cx:(r-l)/2,cy:(a-d)/2,w:l+r,h:a+d};
+}
+function letterSvg(ch){
+  const m=letterMetrics(ch),s=Math.min(.64,76/Math.max(m.w,1),76/Math.max(m.h,1));
+  return '<svg viewBox="0 0 100 100" aria-hidden="true"><text x="'+(50-m.cx*s).toFixed(2)+'" y="'+(50+m.cy*s).toFixed(2)+'" text-anchor="middle" font-size="'+(100*s).toFixed(2)+'" font-weight="700" fill="currentColor">'+ch+'</text></svg>';
+}
+function setLetter(el,ch){el.dataset.l=ch;el.innerHTML=letterSvg(ch);}
+function paintLetters(){document.querySelectorAll("[data-l]").forEach(el=>{el.innerHTML=letterSvg(el.dataset.l);});}
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{for(const k in LM)delete LM[k];paintLetters();});
 const stars=(n,total=3)=>Array.from({length:total},(_,k)=>'<span class="ic">'+ICONS.star(k<n)+'</span>').join("");
 
 /* ===== الحفظ ===== */
@@ -594,11 +614,11 @@ function setSection(s){
   const ns=range(s);
   ns.forEach(n=>{
     const c=document.createElement("button");
-    c.className="cd";c.dataset.n=n;c.textContent=D[n][0];
+    c.className="cd";c.dataset.n=n;setLetter(c,D[n][0]);
     c.onclick=()=>openLearn(n);
     cardGrid.appendChild(c);
     const b=document.createElement("button");
-    b.className="t";b.dataset.n=n;b.textContent=D[n][0];
+    b.className="t";b.dataset.n=n;setLetter(b,D[n][0]);
     b.setAttribute("aria-pressed",n===cur);
     b.onclick=()=>requestPick(n);
     grid.appendChild(b);
@@ -691,7 +711,7 @@ function nextMini(){
   list.forEach(c=>{
     const b=document.createElement("button");
     b.className="mc"+(pic?"":" ltr");
-    b.textContent=pic?D[c][3]:D[c][0];
+    if(pic)b.textContent=D[c][3];else setLetter(b,D[c][0]);
     b.setAttribute("aria-label",pic?D[c][2]:LN(c));
     b.onclick=()=>{
       if(mLock||b.disabled)return;
@@ -831,7 +851,7 @@ function buildQ(a,list){
   $("opts").style.gridTemplateColumns="repeat("+list.length+",1fr)";
   list.forEach(k=>{
     const b=document.createElement("button");
-    b.textContent=D[k][0];b.setAttribute("aria-label",LN(k));
+    setLetter(b,D[k][0]);b.setAttribute("aria-label",LN(k));
     b.onclick=()=>choose(b,k);
     $("opts").appendChild(b);
   });
@@ -898,11 +918,12 @@ function renderAch(){
       if(s)sc='<b>'+AR(s.best)+" من "+AR(MROUNDS)+'</b><div class="mini-st">'+Array.from({length:3},(_,j)=>'<span class="ic">'+ICONS.star(j<starCount(s.best))+'</span>').join("")+"</div>";
       else if(dn)sc="<b>✓</b>";
       else sc="لم يُختبَر";
-      b.innerHTML='<span class="al">'+D[k][0]+'</span><span class="mid"><span class="nm">'+LN(k)+'</span><span class="bar"><i style="width:'+w+'%"></i></span></span><span class="sc">'+sc+"</span>";
+      b.innerHTML='<span class="al" data-l="'+D[k][0]+'"></span><span class="mid"><span class="nm">'+LN(k)+'</span><span class="bar"><i style="width:'+w+'%"></i></span></span><span class="sc">'+sc+"</span>";
       b.onclick=()=>openLearn(k);
       list.appendChild(b);
     });
   });
+  paintLetters();
 }
 
 /* ===== العمل بلا إنترنت والتثبيت ===== */
