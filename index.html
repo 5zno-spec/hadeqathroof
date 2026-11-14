@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#fff8ec">
 <title>حروفي - لعبة تعلّم الحروف العربية</title>
+<meta name="description" content="لعبة تفاعلية لتعليم الأطفال الحروف العربية بالصوت والصورة">
+<link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap" rel="stylesheet">
@@ -164,12 +168,37 @@ main{max-width:600px;margin:0 auto}
 .mres h3{margin:8px 0 2px;font-size:2.2rem}
 .mres.fail h3{color:var(--rD)}
 .mres p{margin:4px 0;font-size:1.25rem;color:var(--mut)}
-.cdn{color:var(--mut);font-size:1.1rem;margin-top:10px}
+/* العدّ التنازلي: حلقة تتناقص خلال ٣ ثوانٍ وفي وسطها الثواني المتبقية */
+.cdw{position:relative;width:60px;height:60px;margin:12px auto 0}
+.cdw svg{width:100%;height:100%;transform:rotate(-90deg)}
+.cdw circle{fill:none;stroke-width:5}
+.cdw-bg{stroke:#23324a1a}
+.cdw-ring{stroke:var(--teal);stroke-linecap:round;stroke-dasharray:138.23;stroke-dashoffset:0}
+.cdw-ring.run{animation:cdRun 3s linear forwards}
+@keyframes cdRun{to{stroke-dashoffset:138.23}}
+.cdw span{position:absolute;inset:0;display:grid;place-items:center;font-size:1.6rem;line-height:1;color:var(--tealD);padding-top:.15em}
+/* شاشة التحميل */
+#splash{position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;background:var(--bg);transition:opacity .5s}
+#splash.out{opacity:0;pointer-events:none}
+.sp-track{width:min(56vw,240px);height:12px;border-radius:99px;background:#fff;border:1px solid var(--line);overflow:hidden}
+.sp-fill{width:100%;height:100%;border-radius:99px;background:var(--org);transform:scaleX(0);transform-origin:right;animation:spf 1.6s ease-out forwards}
+@keyframes spf{to{transform:scaleX(1)}}
+/* نافذة التثبيت */
+#install{position:fixed;inset:0;z-index:95;display:grid;place-items:center;padding:16px;background:#23324a73}
+.ins{position:relative;width:min(100%,300px);background:var(--bg);border:1px solid var(--line);border-radius:30px;padding:40px 18px 22px;box-shadow:0 20px 50px #0004;display:flex;flex-direction:column;align-items:center;gap:18px}
+.ins .badge{width:96px;height:96px;font-size:3.6rem;margin:0;animation:none}
+.ins .x{position:absolute;top:10px;inset-inline-start:10px;width:42px;height:42px}
+.ins .x .ic{width:22px;height:22px}
+.ins .btn .ic{width:26px;height:26px}
 .hint{color:var(--mut);font-size:1.1rem;margin-top:14px}
 @media(max-width:380px){.big{font-size:5.4rem}.pe{font-size:4rem}.cd{font-size:3.4rem}.mc{font-size:3rem}}
 </style>
 </head>
 <body>
+<div id="splash" role="progressbar" aria-label="جارٍ التحميل" aria-valuemin="0" aria-valuemax="100">
+  <div class="hero"><div class="badge">أ</div><h1>حروفي</h1></div>
+  <div class="sp-track"><div class="sp-fill"></div></div>
+</div>
 <div class="bgl" id="bgl" aria-hidden="true"></div>
 
 <header class="top">
@@ -261,9 +290,10 @@ main{max-width:600px;margin:0 auto}
 </main>
 
 <!-- نافذة: هل أتممت دراسة الحرف؟ -->
-<div id="ask" class="ov hide" role="dialog" aria-modal="true">
+<div id="ask" class="ov hide" role="dialog" aria-modal="true" aria-labelledby="askq">
   <div class="box">
-    <div class="askq">هل أتممت دراسة حرف <b id="askN"></b>؟</div>
+    <button class="ib x" id="askClose" aria-label="إغلاق"><span class="ic" data-ic="close"></span></button>
+    <div class="askq" id="askq">هل أتممت دراسة حرف <b id="askN"></b>؟</div>
     <div class="acts" style="margin-top:0">
       <button class="btn main" id="askTest"><span class="ic" data-ic="play"></span>اختبر الآن</button>
       <button class="btn" id="askSkip">ليس الآن</button>
@@ -291,8 +321,17 @@ main{max-width:600px;margin:0 auto}
         <button class="btn" id="mAgain"><span class="ic" data-ic="redo"></span>إعادة</button>
         <button class="btn main" id="mNext">الحرف التالي<span class="ic" data-ic="next"></span></button>
       </div>
-      <div class="cdn hide" id="mCd">ننتقل إلى البطاقات بعد <b id="mCdN">٣</b></div>
+      <div class="cdw hide" id="mCd" aria-hidden="true"><svg viewBox="0 0 52 52"><circle class="cdw-bg" cx="26" cy="26" r="22"/><circle class="cdw-ring" id="mCdRing" cx="26" cy="26" r="22"/></svg><span id="mCdN"></span></div>
     </div>
+  </div>
+</div>
+
+<!-- نافذة تثبيت التطبيق -->
+<div id="install" class="hide" role="dialog" aria-modal="true" aria-label="تثبيت التطبيق">
+  <div class="ins">
+    <button class="ib x" id="insClose" aria-label="إغلاق"><span class="ic" data-ic="close"></span></button>
+    <div class="badge">أ</div>
+    <button class="btn main" id="insBtn"><span class="ic" data-ic="download"></span>تثبيت حروفي</button>
   </div>
 </div>
 
@@ -336,6 +375,7 @@ const ICONS={
   book:c=>SV('<rect x="10" y="5" width="30" height="38" rx="8" fill="'+(c||"#2cc4bf")+'" '+S+'/><path d="M17 5.5v37" fill="none" '+S+' stroke-width="2.2"/><rect x="31" y="3" width="5" height="9" rx="2" fill="#ff8a3d" '+S+' stroke-width="2"/>'+face(28.5,24)),
   game:()=>SV('<rect x="4" y="13" width="40" height="23" rx="11.5" fill="#ff9d57" '+S+'/><path d="M12 20v9M7.5 24.5h9" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round"/><circle cx="36" cy="21.5" r="2.4" fill="#fff"/><circle cx="36" cy="28" r="2.4" fill="#fff"/>'+face(26,23,false)),
   trophy:()=>SV('<path d="M14 11H8.5v3.5A6.5 6.5 0 0 0 15 21M34 11h5.5v3.5A6.5 6.5 0 0 1 33 21" fill="none" '+S+'/><path d="M13 7h22v13a11 11 0 0 1-22 0z" fill="#ffc93c" '+S+'/><path d="M24 31v6" '+S+'/><rect x="15" y="37" width="18" height="6" rx="3" fill="#ff9d57" '+S+'/>'+face(24,19)),
+  download:()=>SV('<path d="M24 8v22M14 21l10 10 10-10M9 40h30" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>'),
   star:(on)=>on===false?SV('<path d="M24 6l5.4 11.2 12.2 1.7-8.9 8.5 2.2 12.1L24 33.7 13.1 39.5l2.2-12.1-8.9-8.5 12.2-1.7z" fill="#f1e7d2" stroke="#cdbf9f" stroke-width="2.6" stroke-linejoin="round"/>'):
     SV('<path d="M24 6l5.4 11.2 12.2 1.7-8.9 8.5 2.2 12.1L24 33.7 13.1 39.5l2.2-12.1-8.9-8.5 12.2-1.7z" fill="#ffc93c" '+S+'/><circle cx="20.5" cy="19.5" r="2.2" fill="#fff" opacity=".75"/>')
 };
@@ -359,12 +399,19 @@ const stats={};
 if(store.stats&&typeof store.stats==="object"){
   for(const k in store.stats){
     const n=+k,s=store.stats[k];
-    if(okN(n)&&s&&Number.isInteger(s.best)&&s.best>=0&&s.best<=MROUNDS)stats[n]={best:s.best,last:Number.isInteger(s.last)?s.last:s.best,tries:Number.isInteger(s.tries)?s.tries:1};
+    if(okN(n)&&s&&Number.isInteger(s.best)&&s.best>=0&&s.best<=MROUNDS)stats[n]={best:s.best,last:Number.isInteger(s.last)?s.last:s.best,tries:Number.isInteger(s.tries)?s.tries:1,date:+s.date||0};
   }
 }
 let muted=!!store.muted,best=Number.isInteger(store.best)?store.best:0;
 let cur=okN(store.cur)?store.cur:0,curSec=secOf(cur),curTab="home";
-function persist(){try{localStorage.setItem(KEY,JSON.stringify({cur,muted,best,learned:[...studied],stats}));}catch(e){}}
+function persist(){
+  try{
+    localStorage.setItem(KEY,JSON.stringify({
+      cur,muted,best,learned:[...studied],stats,
+      game:{score,qi,answer,list:qList,pending,done}
+    }));
+  }catch(e){}
+}
 
 /* ===== الصوت ===== */
 let actx,current=null;
@@ -427,17 +474,17 @@ function playClip(src,text,onEnd){
 const sayLetter=(n,onEnd)=>playClip(asset(AUDIO[n]+".mp3"),"حرف "+D[n][1],onEnd);
 const sayWord=n=>synth(D[n][2]);
 
-let lastPraise=-1,praiseEl=null,praiseT=0,praiseA=0;
+/* فقاعة تشجيع نصية فقط (بلا صوت نطق) عند الإجابة الصحيحة؛ تبقى نغمة النجاح */
+let lastPraise=-1,praiseEl=null,praiseT=0;
 function praise(){
   let i;do{i=Math.floor(Math.random()*PRAISE.length);}while(i===lastPraise&&PRAISE.length>1);
   lastPraise=i;
-  clearTimeout(praiseT);clearTimeout(praiseA);
+  clearTimeout(praiseT);
   if(praiseEl)praiseEl.remove();
   const el=document.createElement("div");
   el.className="praise";el.setAttribute("role","status");el.textContent=PRAISE[i]+"!";
   document.body.appendChild(el);praiseEl=el;
   praiseT=setTimeout(()=>{el.remove();if(praiseEl===el)praiseEl=null;},1500);
-  praiseA=setTimeout(()=>playClip(asset("praise/"+(i+1)+".mp3"),PRAISE[i]),380);
 }
 function applyMute(){
   $("mute").innerHTML='<span class="ic" data-ic="'+(muted?"mute":"sound")+'"></span>';
@@ -473,11 +520,29 @@ function show(tab){
   window.scrollTo(0,0);
   persist();
 }
-$("homeBtn").onclick=()=>show("home");
-[0,1,2].forEach(s=>$("hb"+s).onclick=()=>{setSection(s);show("cards");});
-$("hb3").onclick=()=>show("play");
-$("hb4").onclick=()=>show("ach");
-$("toCards").onclick=()=>{setSection(secOf(cur));show("cards");};
+/* التنقل وزر الرجوع في الهاتف:
+   الرئيسية ← بطاقات قسم أو إنجازاتي أو العب (depth 1) ← تعلّم حرف (depth 2) ← اختبار الحرف (depth 3).
+   الرجوع يعود خطوة واحدة، وزر الرئيسية يعود مباشرة. كل حالة تحفظ رقم القسم (sec) ليعود الرجوع إلى البطاقات الصحيحة */
+if(history.state)history.replaceState(null,"");
+let afterPop=null;
+function enter(tab,sec){history.pushState({v:"sec",tab,depth:1,sec},"");show(tab);}
+/* الذهاب إلى بطاقات القسم s: نعود في السجل إلى depth 1 ثم نستبدل تلك الحالة ببطاقات القسم */
+function goCards(s){
+  const d=(history.state&&history.state.depth)||0;
+  const go=()=>{
+    if(curSec!==s)setSection(s);
+    const st={v:"sec",tab:"cards",depth:1,sec:s};
+    if(d>=1)history.replaceState(st,"");else history.pushState(st,"");
+    show("cards");
+  };
+  if(d>=2){afterPop=go;history.go(-(d-1));}
+  else go();
+}
+$("homeBtn").onclick=()=>{const d=history.state&&history.state.depth;if(d)history.go(-d);else show("home");};
+[0,1,2].forEach(s=>$("hb"+s).onclick=()=>{setSection(s);enter("cards",s);});
+$("hb3").onclick=()=>enter("play");
+$("hb4").onclick=()=>enter("ach");
+$("toCards").onclick=()=>goCards(secOf(cur));
 function renderHome(){
   const n=studied.size;
   $("hp").textContent="أنجزت "+AR(n)+" من "+AR(D.length)+" حرفًا";
@@ -550,6 +615,7 @@ function updateNums(){
 function openLearn(n){
   const s=secOf(n);
   if(s!==curSec)setSection(s);
+  history.pushState({v:"sec",tab:"learn",depth:2,sec:s},"");
   show("learn");
   pick(n);
 }
@@ -574,7 +640,14 @@ function requestPick(n){
 }
 function showAsk(){$("askN").textContent=D[cur][0];$("ask").classList.remove("hide");$("askTest").focus();}
 function hideAsk(){$("ask").classList.add("hide");}
-$("ask").onclick=e=>{if(e.target===$("ask")){hideAsk();askTarget=null;}};
+/* إغلاق النافذة دون انتقال: يبقى الطفل على الحرف الحالي ويعود التركيز إلى مربعه */
+function closeAsk(){
+  hideAsk();askTarget=null;
+  const b=grid.querySelector('[data-n="'+cur+'"]');
+  if(b)b.focus();
+}
+$("askClose").onclick=closeAsk;
+$("ask").onclick=e=>{if(e.target===$("ask"))closeAsk();};
 $("askTest").onclick=()=>{hideAsk();askTarget=null;openMini();};
 $("askSkip").onclick=()=>{hideAsk();if(askTarget!==null)pick(askTarget);askTarget=null;};
 $("say").onclick=()=>{sayLetter(cur,()=>sayWord(cur));};
@@ -584,15 +657,23 @@ const starCount=s=>s>=5?3:s>=3?2:s>=1?1:0;
 let mN=0,mR=0,mLock=false,mTimer=0,mFirst=0,mMiss=false,cdTimer=0;
 function openMini(){
   clearTimeout(mTimer);stopCountdown();
+  if(!(history.state&&history.state.v==="mini"))history.pushState({v:"mini",tab:"learn",depth:3,sec:curSec},"");
   mN=cur;mR=0;mFirst=0;
   $("mNum").textContent=D[mN][0];
   $("mResult").classList.add("hide");$("mRound").classList.remove("hide");
   $("mini").classList.remove("hide");
   nextMini();
+  $("mClose").focus();
 }
-function closeMini(){
+function hideMini(){
   clearTimeout(mTimer);stopCountdown();stopAudio();
   $("mini").classList.add("hide");$("mResult").classList.add("hide");
+}
+/* الإغلاق بعلامة ✕ يعمل في أي لحظة، حتى في منتصف الاختبار أو مع ظهور نافذة النتيجة */
+function closeMini(){
+  hideMini();
+  if(history.state&&history.state.v==="mini")history.back();
+  $("miniBtn").focus();
 }
 function nextMini(){
   if($("mini").classList.contains("hide"))return;
@@ -633,7 +714,7 @@ function finishMini(){
   $("mCount").textContent="";
   const passed=mFirst>=PASS;
   const prev=stats[mN];
-  stats[mN]={best:Math.max(prev?prev.best:0,mFirst),last:mFirst,tries:(prev?prev.tries:0)+1};
+  stats[mN]={best:Math.max(prev?prev.best:0,mFirst),last:mFirst,tries:(prev?prev.tries:0)+1,date:Date.now()};
   if(passed)studied.add(mN);
   updateNums();persist();
   $("mResult").classList.toggle("fail",!passed);
@@ -644,12 +725,21 @@ function finishMini(){
   $("mNext").classList.toggle("hide",!passed||mN>=SECS[secOf(mN)].to);
   $("mCd").classList.toggle("hide",!passed);
   $("mRound").classList.add("hide");$("mResult").classList.remove("hide");
-  if(passed){tone([523,659,784,1047]);startCountdown();}
-  else tone([392,330]);
+  if(passed){
+    tone([523,659,784,1047]);
+    ($("mNext").classList.contains("hide")?$("mAgain"):$("mNext")).focus();
+    startCountdown();
+  }else{
+    tone([392,330]);
+    $("mAgain").focus();
+  }
 }
+/* العدّ التنازلي بعد الاجتياز: حلقة تتناقص خلال ٣ ثوانٍ وفي وسطها الثواني المتبقية */
 function startCountdown(){
   let left=3;
   $("mCdN").textContent=AR(left);
+  const ring=$("mCdRing");
+  ring.classList.remove("run");void ring.getBoundingClientRect();ring.classList.add("run");   // إعادة تشغيل حركة الحلقة
   clearInterval(cdTimer);
   cdTimer=setInterval(()=>{
     left--;
@@ -659,28 +749,56 @@ function startCountdown(){
 }
 function stopCountdown(){clearInterval(cdTimer);}
 function toCards(){
-  closeMini();
-  setSection(secOf(mN));
-  show("cards");
+  stopCountdown();
+  hideMini();
+  goCards(secOf(mN));
+}
+function toNext(){
+  stopCountdown();
+  const n=mN+1;
+  if(n>SECS[secOf(mN)].to)return toCards();
+  afterPop=()=>pick(n);   // نعود في السجل إلى صفحة التعلّم ثم نفتح الحرف التالي
+  if(history.state&&history.state.v==="mini")history.back();
+  else{hideMini();const f=afterPop;afterPop=null;f();}
 }
 $("miniBtn").onclick=openMini;
 $("mClose").onclick=closeMini;
 $("mAgain").onclick=openMini;
-$("mNext").onclick=()=>{closeMini();pick(mN+1);};
+$("mNext").onclick=toNext;
 document.addEventListener("keydown",e=>{
   if(e.key!=="Escape")return;
-  if(!$("ask").classList.contains("hide")){hideAsk();askTarget=null;}
+  if(!$("install").classList.contains("hide"))hideInstall();
+  else if(!$("ask").classList.contains("hide"))closeAsk();
   else if(!$("mini").classList.contains("hide"))closeMini();
 });
 
+/* زر الرجوع في الهاتف أو المتصفح */
+window.addEventListener("popstate",e=>{
+  const st=e.state||{};
+  hideAsk();askTarget=null;
+  stopCount();
+  if(st.v!=="mini"&&!$("mini").classList.contains("hide")){hideMini();$("miniBtn").focus();}
+  if(st.v==="mini"&&$("mini").classList.contains("hide")){
+    history.replaceState({v:"sec",tab:"learn",depth:st.depth,sec:st.sec},"");   // تقدّم إلى اختبار مغلق: نبقى في صفحة التعلّم
+    st.v="sec";
+  }
+  if(st.v==="sec"||st.v==="mini"){
+    if(Number.isInteger(st.sec)&&st.sec!==curSec&&st.tab!=="learn")setSection(st.sec);
+    if(st.tab==="learn"&&secOf(cur)!==curSec)setSection(secOf(cur));
+    if(st.tab!==curTab)show(st.tab||"cards");
+  }else show("home");
+  if(afterPop){const f=afterPop;afterPop=null;f();}
+});
+
 /* ===== العب مع الحروف ===== */
-let score=0,qi=0,answer=0,locked=false,done=false,nextT=0;
+let score=0,qi=0,answer=0,locked=false,done=false,nextT=0,qList=[],pending=false;   // pending: أجاب الطفل صحيحًا وننتظر السؤال التالي
 const playPool=()=>[...studied];
 function startGame(){
   clearTimeout(nextT);
-  score=0;qi=0;done=false;
+  score=0;qi=0;done=false;pending=false;
   if(playPool().length<2){
     $("round").classList.add("hide");$("result").classList.add("hide");$("lock").classList.remove("hide");
+    persist();
     return;
   }
   $("lock").classList.add("hide");
@@ -691,14 +809,20 @@ function startGame(){
 function updateBar(){
   $("sc").textContent=AR(score);
   $("qn").textContent="سؤال "+AR(Math.max(qi,1))+" من "+AR(TOTAL);
-  $("qf").style.width=((qi-1)/TOTAL*100)+"%";
+  $("qf").style.width=((done?TOTAL:pending?qi:qi-1)/TOTAL*100)+"%";
 }
 function nextQ(){
   if(qi>=TOTAL)return finish();
-  qi++;locked=false;
+  qi++;pending=false;
   const pool=playPool();
-  answer=pool[Math.floor(Math.random()*pool.length)];
-  const list=shuffle([answer,...shuffle(pool.filter(k=>k!==answer)).slice(0,2)]);
+  const a=pool[Math.floor(Math.random()*pool.length)];
+  buildQ(a,shuffle([a,...shuffle(pool.filter(k=>k!==a)).slice(0,2)]));
+  persist();
+  setTimeout(()=>{if(curTab==="play")synth("ما أول حرف في كلمة "+D[answer][2]);},300);
+}
+/* يبني السؤال الحالي من الإجابة وقائمة الخيارات (تُستخدم أيضًا عند استرجاع لعبة محفوظة) */
+function buildQ(a,list){
+  locked=false;answer=a;qList=list;
   $("qe").textContent=D[answer][3];$("qw").textContent=D[answer][2];
   const c=document.querySelector(".card.q");c.classList.remove("pop");void c.offsetWidth;c.classList.add("pop");
   $("msg").textContent="";
@@ -711,16 +835,15 @@ function nextQ(){
     $("opts").appendChild(b);
   });
   updateBar();
-  setTimeout(()=>{if(curTab==="play")synth("ما أول حرف في كلمة "+D[answer][2]);},300);
 }
 function choose(b,k){
   if(locked||b.disabled)return;
   if(k===answer){
-    locked=true;score++;
+    locked=true;score++;pending=true;persist();
     b.classList.add("ok");tone([523,659,784]);
     $("msg").textContent="صحيح! "+LN(k);
     praise();
-    $("qf").style.width=(qi/TOTAL*100)+"%";
+    updateBar();
     nextT=setTimeout(nextQ,1700);
   }else{
     b.classList.add("no");b.disabled=true;wrong();
@@ -729,7 +852,7 @@ function choose(b,k){
 }
 $("qsay").onclick=()=>synth("ما أول حرف في كلمة "+D[answer][2]);
 function finish(){
-  done=true;if(score>best)best=score;persist();
+  done=true;pending=false;if(score>best)best=score;persist();
   $("round").classList.add("hide");$("result").classList.remove("hide");
   const s=score>=9?3:score>=6?2:1;
   $("rs").innerHTML=stars(s);
@@ -738,7 +861,17 @@ function finish(){
   tone([523,659,784,1047]);
 }
 $("again").onclick=startGame;
-$("toLearn").onclick=()=>{setSection(0);show("cards");};
+/* استرجاع اللعبة المحفوظة (الجارية فقط؛ المنتهية تبدأ من جديد) */
+(function restoreGame(){
+  const g=store.game;
+  if(!g||g.done||!Number.isInteger(g.qi)||g.qi<1||g.qi>TOTAL||!Number.isInteger(g.score)||g.score<0||g.score>g.qi)return;
+  const ok=Number.isInteger(g.answer)&&Array.isArray(g.list)&&(g.list.length===2||g.list.length===3)&&
+    g.list.every(n=>okN(n)&&studied.has(n))&&g.list.includes(g.answer);
+  if(!ok||(g.pending&&g.qi>=TOTAL))return;
+  score=g.score;qi=g.qi;pending=!!g.pending;
+  if(pending)nextQ();else buildQ(g.answer,g.list);
+})();
+$("toLearn").onclick=()=>goCards(0);
 
 /* ===== إنجازاتي ===== */
 function renderAch(){
@@ -771,12 +904,57 @@ function renderAch(){
   });
 }
 
+/* ===== العمل بلا إنترنت والتثبيت ===== */
+if("serviceWorker" in navigator&&/^https?:$/.test(location.protocol)){
+  window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
+}
+/* نافذة التثبيت: تظهر بعد ثانيتين من انتهاء شاشة التحميل،
+   فقط حين يسمح المتصفح بالتثبيت ولم يكن التطبيق مثبتًا */
+let installEvt=null,splashDone=false,insTimer=0;
+const isInstalled=()=>matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
+function scheduleInstall(){
+  clearTimeout(insTimer);
+  if(installEvt&&splashDone&&!isInstalled())insTimer=setTimeout(showInstall,2000);
+}
+function showInstall(){
+  if(!installEvt||isInstalled())return;
+  $("install").classList.remove("hide");
+  $("insBtn").focus();
+}
+function hideInstall(){
+  clearTimeout(insTimer);
+  $("install").classList.add("hide");
+}
+window.addEventListener("beforeinstallprompt",e=>{
+  e.preventDefault();   // نمنع شريط المتصفح الافتراضي ونعرض نافذتنا
+  installEvt=e;
+  scheduleInstall();
+});
+$("insBtn").onclick=async()=>{
+  const p=installEvt;
+  hideInstall();
+  if(!p)return;
+  installEvt=null;   // حدث التثبيت يُستخدم مرة واحدة
+  try{await p.prompt();await p.userChoice;}catch(e){}
+};
+$("insClose").onclick=hideInstall;
+$("install").onclick=e=>{if(e.target===$("install"))hideInstall();};
+window.addEventListener("appinstalled",()=>{installEvt=null;hideInstall();});
+
 /* ===== البداية ===== */
 fillIcons();
 applyMute();
 setSection(curSec);
 pick(cur,true);
 show("home");
+/* شاشة التحميل تختفي بعد ثانيتين تقريبًا */
+setTimeout(()=>{
+  const sp=$("splash");
+  sp.classList.add("out");
+  setTimeout(()=>sp.remove(),600);
+  splashDone=true;
+  scheduleInstall();
+},1800);
 </script>
 </body>
 </html>
