@@ -405,7 +405,7 @@ const D=[
 ["ج","جيم","جمل","🐪"],["ح","حاء","حمامة","🕊️"],["خ","خاء","خروف","🐑"],["د","دال","دجاجة","🐔"],
 ["ذ","ذال","ذرة","🌽"],["ر","راء","ريشة","🪶"],["ز","زاي","زرافة","🦒"],["س","سين","سمكة","🐟"],
 ["ش","شين","شمس","☀️"],["ص","صاد","صقر","🦅"],["ض","ضاد","ضبع","🐾"],["ط","طاء","طائرة","✈️"],
-["ظ","ظاء","ظرف","✉️"],["ع","عين","عنب","🍇"],["غ","غين","غزال","🦌"],["ف","فاء","فراشة","🦋"],
+["ظ","ظاء","ظرف","✉️"],["ع","عين","عنب","🍇"],["غ","غين","غزالة","🦌"],["ف","فاء","فراشة","🦋"],
 ["ق","قاف","قمر","🌙"],["ك","كاف","كلب","🐶"],["ل","لام","ليمون","🍋"],["م","ميم","موزة","🍌"],
 ["ن","نون","نحلة","🐝"],["ه","هاء","هدية","🎁"],["و","واو","وردة","🌹"],["ي","ياء","يربوع","🐭"]
 ];
@@ -417,11 +417,14 @@ const W2={0:["أسد","🦁"],3:["ثور","🐂"],14:["ضفدع","🐸"],21:["ك
    الحرف الذي ليس له صورة يُعرض برمزه التعبيري */
 const WIMG=new Set([0,1,3,4,5,6,10,11,14,18,19,21,24,27]),WIMG2=new Set([0,3]);
 const wimg=(n,k)=>"img/words/"+AUDIO[n]+(k?"_2":"")+".webp";
+/* أصوات الكلمات في audio/words بالاسم نفسه (02_baa.mp3 و02_baa_2.mp3)؛ الكلمة التي ليس لها تسجيل تُنطق آليًا */
+const WAUD=new Set(["01_Alef","01_Alef_2","02_baa","04_thaa","04_thaa_2","05_geem","06_haa","07_khaa","11_zay","12_seen","15_dad","19_ghyn","20_faa","22_kaf","25_noon","28_yaa"]);
+const wkey=(n,k)=>AUDIO[n]+(k?"_2":"");
 /* كلمات الحرف: إن كان للحرف صور تُعرض الكلمات المصوّرة فقط (حتى لا يختلط الرسم بالرموز)،
    وإلا تُعرض الكلمة الأولى برمزها التعبيري */
 function words(n){
-  const v=[{w:D[n][2],e:D[n][3],img:WIMG.has(n)?wimg(n,0):""}];
-  if(W2[n])v.push({w:W2[n][0],e:W2[n][1]||"",img:WIMG2.has(n)?wimg(n,1):""});
+  const v=[{w:D[n][2],e:D[n][3],img:WIMG.has(n)?wimg(n,0):"",key:wkey(n,0)}];
+  if(W2[n])v.push({w:W2[n][0],e:W2[n][1]||"",img:WIMG2.has(n)?wimg(n,1):"",key:wkey(n,1)});
   const pics=v.filter(x=>x.img);
   return pics.length?pics:[v[0]];
 }
@@ -580,7 +583,18 @@ function playClip(src,text,onEnd){
   safety(3500);
 }
 const sayLetter=(n,onEnd)=>playClip(asset(AUDIO[n]+".mp3"),"حرف "+D[n][1],onEnd);
-const sayWord=(n,k=0)=>synth(word(n,k).w);
+/* نطق الكلمة: بالتسجيل إن وُجد، وإلا آليًا */
+function sayWord(n,k=0,onEnd){
+  const v=word(n,k);
+  if(WAUD.has(v.key))playClip(asset("words/"+v.key+".mp3"),v.w,onEnd);
+  else synth(v.w,onEnd);
+}
+/* سؤال اللعب: تسجيل الكلمة إن وُجد، وإلا تُنطق الجملة كاملة آليًا */
+function sayQ(){
+  const v=word(answer,qv);
+  if(WAUD.has(v.key))playClip(asset("words/"+v.key+".mp3"),v.w);
+  else synth("ما أول حرف في كلمة "+v.w);
+}
 
 /* فقاعة تشجيع عند الإجابة الصحيحة: عبارة عشوائية (لا تتكرر مرتين متتاليتين) تظهر ويُسمع صوتها بعد نغمة النجاح */
 let lastPraise=-1,praiseEl=null,praiseT=0,praiseA=0;
@@ -946,7 +960,7 @@ function nextQ(){
   const a=pool[Math.floor(Math.random()*pool.length)];
   buildQ(a,shuffle([a,...shuffle(pool.filter(k=>k!==a)).slice(0,2)]));
   persist();
-  setTimeout(()=>{if(curTab==="play")synth("ما أول حرف في كلمة "+word(answer,qv).w);},300);
+  setTimeout(()=>{if(curTab==="play")sayQ();},300);
 }
 /* يبني السؤال الحالي من الإجابة وقائمة الخيارات (تُستخدم أيضًا عند استرجاع لعبة محفوظة) */
 function buildQ(a,list){
@@ -978,7 +992,7 @@ function choose(b,k){
     $("msg").textContent="حاول مرة أخرى";
   }
 }
-$("qsay").onclick=()=>synth("ما أول حرف في كلمة "+word(answer,qv).w);
+$("qsay").onclick=sayQ;
 function finish(){
   done=true;pending=false;if(score>best)best=score;persist();
   $("round").classList.add("hide");$("result").classList.remove("hide");
