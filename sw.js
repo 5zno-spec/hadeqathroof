@@ -1,9 +1,12 @@
 /* يعمل التطبيق بلا إنترنت: تُخزَّن الملفات عند أول زيارة ثم تُقدَّم من الجهاز */
-const VERSION = 'v5';
+const VERSION = 'v6';
 const CACHE = 'harfi-' + VERSION;
+/* تسجيلات الحروف الـ 28 (تُحفظ عند التثبيت فتعمل دون إنترنت من أول مرة) */
+const LETTERS = ['01_Alef', '02_baa', '03_taa', '04_thaa', '05_geem', '06_haa', '07_khaa', '08_dal', '09_zal', '10_raa', '11_zay', '12_seen', '13_sheen', '14_sad', '15_dad', '16_taaa', '17_zaa', '18_ayn', '19_ghyn', '20_faa', '21_qaf', '22_kaf', '23_lam', '24_mem', '25_noon', '26_haa', '27_waw', '28_yaa'];
 const CORE = [
   './', 'index.html', 'manifest.webmanifest',
   'audio/praise/a7sant.mp3', 'audio/praise/rae3.mp3', 'audio/praise/barak-allah-feek.mp3', 'audio/praise/batal.mp3', 'audio/praise/3zeem.mp3', 'audio/praise/mmtaz.mp3',
+  ...LETTERS.map(n => 'audio/' + n + '.mp3'),
   'img/logo.webp', 'img/favicon-32.png', 'img/apple-touch-icon.png', 'img/icon-192.png', 'img/icon-512.png', 'img/icon-maskable-192.png', 'img/icon-maskable-512.png'
 ];
 const FONT_HOSTS = ['fonts.googleapis.com', 'fonts.gstatic.com'];

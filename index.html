@@ -12,7 +12,7 @@
 <link rel="preload" as="image" href="img/logo.webp">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#f5fbff;--ink:#22305e;--mut:#66779a;--teal:#2ea6dd;--tealD:#1a7fb0;--tealS:#e2f3fc;--org:#ec5a9e;--orgD:#c23a7b;--orgS:#fde6f1;--yelS:#fff3c6;--line:#dbe7f2;--g:#6dbe45;--gD:#4b952a;--gS:#e9f6df;--r:#e8413c;--rD:#b8261f;--rS:#fde4e2;--star:#f7c21a;--starD:#c99a00}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -20,6 +20,9 @@ html{background:linear-gradient(180deg,#eefaff 0%,#d4f1fb 40%,#b2e6f6 100%) fixe
 body{margin:0;min-height:100vh;font-family:"Amiri","Traditional Arabic","Simplified Arabic",serif;font-weight:700;color:var(--ink);text-align:center;background:transparent;
   padding:env(safe-area-inset-top) 14px calc(env(safe-area-inset-bottom) + 24px);overflow-x:hidden}
 button{font-family:inherit;font-weight:700;color:inherit}
+/* خط تجوال للأزرار والعناوين؛ الحروف نفسها تبقى بخط أميري */
+:root{--ui:"Tajawal","Segoe UI",Tahoma,sans-serif}
+.btn,.mbtn,h1,h2,h3{font-family:var(--ui)}
 .hide{display:none!important}
 .ic{display:inline-flex;width:1.25em;height:1.25em;vertical-align:middle;flex:none}
 .ic svg{width:100%;height:100%;overflow:visible}
