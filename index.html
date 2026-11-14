@@ -352,7 +352,9 @@ const SECS=[{from:0,to:9,label:"(أ - ر)"},{from:10,to:18,label:"(ز - غ)"},{f
 const secOf=n=>n<=9?0:n<=18?1:2;
 const range=s=>Array.from({length:SECS[s].to-SECS[s].from+1},(_,k)=>SECS[s].from+k);
 const LN=n=>"ال"+D[n][1];
-const PRAISE=["أحسنت","ممتاز","رائع","ما شاء الله","بارك الله فيك"];
+/* عبارات التشجيع: لكل عبارة ملف صوتي في audio/praise */
+const PRAISE=["أحسنت","رائع","بارك الله فيك","بطل","عظيم","ممتاز"];
+const PRAISE_FILES=["a7sant","rae3","barak-allah-feek","batal","3zeem","mmtaz"];
 const $=id=>document.getElementById(id);
 const AR=n=>String(n).replace(/\d/g,d=>"٠١٢٣٤٥٦٧٨٩"[d]);
 const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
@@ -474,17 +476,18 @@ function playClip(src,text,onEnd){
 const sayLetter=(n,onEnd)=>playClip(asset(AUDIO[n]+".mp3"),"حرف "+D[n][1],onEnd);
 const sayWord=n=>synth(D[n][2]);
 
-/* فقاعة تشجيع نصية فقط (بلا صوت نطق) عند الإجابة الصحيحة؛ تبقى نغمة النجاح */
-let lastPraise=-1,praiseEl=null,praiseT=0;
+/* فقاعة تشجيع عند الإجابة الصحيحة: عبارة عشوائية (لا تتكرر مرتين متتاليتين) تظهر ويُسمع صوتها بعد نغمة النجاح */
+let lastPraise=-1,praiseEl=null,praiseT=0,praiseA=0;
 function praise(){
   let i;do{i=Math.floor(Math.random()*PRAISE.length);}while(i===lastPraise&&PRAISE.length>1);
   lastPraise=i;
-  clearTimeout(praiseT);
+  clearTimeout(praiseT);clearTimeout(praiseA);
   if(praiseEl)praiseEl.remove();
   const el=document.createElement("div");
   el.className="praise";el.setAttribute("role","status");el.textContent=PRAISE[i]+"!";
   document.body.appendChild(el);praiseEl=el;
-  praiseT=setTimeout(()=>{el.remove();if(praiseEl===el)praiseEl=null;},1500);
+  praiseT=setTimeout(()=>{el.remove();if(praiseEl===el)praiseEl=null;},1900);
+  praiseA=setTimeout(()=>playClip(asset("praise/"+PRAISE_FILES[i]+".mp3"),PRAISE[i]),380);
 }
 function applyMute(){
   $("mute").innerHTML='<span class="ic" data-ic="'+(muted?"mute":"sound")+'"></span>';
