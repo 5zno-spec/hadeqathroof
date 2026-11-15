@@ -1,5 +1,5 @@
 /* يعمل التطبيق بلا إنترنت: تُخزَّن الملفات عند أول زيارة ثم تُقدَّم من الجهاز */
-const VERSION = 'v7';
+const VERSION = 'v8';
 const CACHE = 'harfi-' + VERSION;
 /* تسجيلات الحروف الـ 28 (تُحفظ عند التثبيت فتعمل دون إنترنت من أول مرة) */
 const LETTERS = ['01_Alef', '02_baa', '03_taa', '04_thaa', '05_geem', '06_haa', '07_khaa', '08_dal', '09_zal', '10_raa', '11_zay', '12_seen', '13_sheen', '14_sad', '15_dad', '16_taaa', '17_zaa', '18_ayn', '19_ghyn', '20_faa', '21_qaf', '22_kaf', '23_lam', '24_mem', '25_noon', '26_haa', '27_waw', '28_yaa'];
@@ -7,8 +7,8 @@ const CORE = [
   './', 'index.html', 'manifest.webmanifest',
   'audio/praise/a7sant.mp3', 'audio/praise/rae3.mp3', 'audio/praise/barak-allah-feek.mp3', 'audio/praise/batal.mp3', 'audio/praise/3zeem.mp3', 'audio/praise/mmtaz.mp3',
   ...LETTERS.map(n => 'audio/' + n + '.mp3'),
-  ...['01_Alef','01_Alef_2','02_baa','04_thaa','04_thaa_2','05_geem','06_haa','07_khaa','11_zay','12_seen','15_dad','19_ghyn','20_faa','22_kaf','25_noon','28_yaa'].map(n => 'audio/words/' + n + '.mp3'),
-  ...['01_Alef','01_Alef_2','02_baa','04_thaa','04_thaa_2','05_geem','06_haa','07_khaa','11_zay','12_seen','15_dad','19_ghyn','20_faa','22_kaf','25_noon','28_yaa'].map(n => 'img/words/' + n + '.webp'),
+  ...['01_Alef','01_Alef_2','02_baa','02_baa_2','03_taa','04_thaa','04_thaa_2','05_geem','06_haa','06_haa_2','07_khaa','07_khaa_2','08_dal','08_dal_2','09_zal','09_zal_2','11_zay','11_zay_2','12_seen','12_seen_2','13_sheen','13_sheen_2','14_sad','14_sad_2','15_dad','15_dad_2','16_taaa','16_taaa_2','17_zaa','17_zaa_2','18_ayn','19_ghyn','19_ghyn_2','20_faa','20_faa_2','21_qaf','21_qaf_2','22_kaf','22_kaf_2','23_lam','24_mem','25_noon','25_noon_2','26_haa','26_haa_2','27_waw','27_waw_2','28_yaa','28_yaa_2'].map(n => 'audio/words/' + n + '.mp3'),
+  ...['01_Alef','01_Alef_2','02_baa','02_baa_2','03_taa','04_thaa','04_thaa_2','05_geem','06_haa','06_haa_2','07_khaa','07_khaa_2','08_dal','08_dal_2','09_zal','09_zal_2','11_zay','11_zay_2','12_seen','12_seen_2','13_sheen','13_sheen_2','14_sad','14_sad_2','15_dad','15_dad_2','16_taaa','16_taaa_2','17_zaa','17_zaa_2','18_ayn','19_ghyn','19_ghyn_2','20_faa','20_faa_2','21_qaf','21_qaf_2','22_kaf','22_kaf_2','23_lam','24_mem','24_mem_2','25_noon','25_noon_2','26_haa','26_haa_2','27_waw','27_waw_2','28_yaa','28_yaa_2'].map(n => 'img/words/' + n + '.webp'),
   'img/logo.webp', 'img/favicon-32.png', 'img/apple-touch-icon.png', 'img/icon-192.png', 'img/icon-512.png', 'img/icon-maskable-192.png', 'img/icon-maskable-512.png'
 ];
 const FONT_HOSTS = ['fonts.googleapis.com', 'fonts.gstatic.com'];
