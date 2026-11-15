@@ -116,12 +116,15 @@ main{max-width:600px;margin:0 auto}
 .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#ffd84a,var(--star));border-radius:99px;transition:width .5s}
 
 /* بطاقات الحروف */
-.cards{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;padding:8px 2px 12px}
+/* لوحة الحروف: ٤ بطاقات في الصف على الهاتف لتكبر، و٧ على الشاشات الأعرض */
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:8px 2px 12px}
 .cd{position:relative;aspect-ratio:1;display:grid;place-items:center;border:1px solid var(--line);border-radius:16px;font-size:clamp(1.7rem,8vw,2.7rem);line-height:1;padding:0;cursor:pointer;background:var(--tealS);box-shadow:0 3px 0 var(--line);transition:transform .15s,box-shadow .15s,opacity .25s,filter .25s}
 .cards .cd:nth-child(4n+1){background:var(--rS);color:var(--rD)}
 .cards .cd:nth-child(4n+2){background:var(--tealS);color:var(--tealD)}
 .cards .cd:nth-child(4n+3){background:var(--gS);color:var(--gD)}
 .cards .cd:nth-child(4n){background:var(--yelS);color:var(--starD)}
+/* على الهاتف (٤ أعمدة) تُزاح الألوان خطوة في كل صف حتى لا تصطف أعمدةً بلون واحد */
+@media(max-width:479px){.cards .cd:nth-child(16n+1){background:var(--rS);color:var(--rD)}.cards .cd:nth-child(16n+2){background:var(--tealS);color:var(--tealD)}.cards .cd:nth-child(16n+3){background:var(--gS);color:var(--gD)}.cards .cd:nth-child(16n+4){background:var(--yelS);color:var(--starD)}.cards .cd:nth-child(16n+5){background:var(--tealS);color:var(--tealD)}.cards .cd:nth-child(16n+6){background:var(--gS);color:var(--gD)}.cards .cd:nth-child(16n+7){background:var(--yelS);color:var(--starD)}.cards .cd:nth-child(16n+8){background:var(--rS);color:var(--rD)}.cards .cd:nth-child(16n+9){background:var(--gS);color:var(--gD)}.cards .cd:nth-child(16n+10){background:var(--yelS);color:var(--starD)}.cards .cd:nth-child(16n+11){background:var(--rS);color:var(--rD)}.cards .cd:nth-child(16n+12){background:var(--tealS);color:var(--tealD)}.cards .cd:nth-child(16n+13){background:var(--yelS);color:var(--starD)}.cards .cd:nth-child(16n+14){background:var(--rS);color:var(--rD)}.cards .cd:nth-child(16n+15){background:var(--tealS);color:var(--tealD)}.cards .cd:nth-child(16n+16){background:var(--gS);color:var(--gD)}}
 .cd:not(.done){opacity:.82;filter:saturate(.85)}
 .cd:active{transform:translateY(3px);box-shadow:none}
 .cd.lit{opacity:1;filter:none;transform:scale(1.1);z-index:1;box-shadow:0 0 0 3px #fff,0 0 0 6px var(--star),0 8px 18px #22305e33}
