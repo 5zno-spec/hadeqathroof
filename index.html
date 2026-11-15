@@ -760,7 +760,8 @@ function pick(n,quiet){
   pv=0;saidPv=-1;renderPv();
   [$("big").parentNode,$("pe").parentNode].forEach(el=>{el.classList.remove("pop");void el.offsetWidth;el.classList.add("pop");});
   persist();
-  if(!quiet){tone([660]);sayLetter(n,()=>sayWord(n,pv));}
+  /* عند فتح الحرف يُنطق الحرف والصورة الأولى، فتُحسب كأنها ضغطة تشغيل: الضغطة التالية تنتقل إلى الصورة الثانية */
+  if(!quiet){tone([660]);saidPv=pv;sayLetter(n,()=>sayWord(n,pv));}
 }
 /* صورة الكلمة في صفحة التعلّم: إن كان للحرف كلمتان يتنقل بينهما زر التشغيل */
 let pv=0;
