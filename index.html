@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#eefaff">
+<!-- يُلتقط إذن التثبيت مبكرًا قبل تحميل الخطوط، فلا يظهر إشعار كروم الافتراضي وتظهر نافذتنا بدلًا منه -->
+<script>window.addEventListener("beforeinstallprompt",function(e){e.preventDefault();window.__bip=e;});</script>
 <title>أصدقائي الحروف - لعبة تعلّم الحروف العربية</title>
 <meta name="description" content="لعبة تفاعلية لتعليم الأطفال الحروف العربية الـ 28 بالصوت والصورة: بطاقات ملوّنة واختبار لكل حرف ولعب ممتع، وتعمل دون إنترنت.">
 <link rel="canonical" href="https://asdqahoroof.vercel.app/">
@@ -1087,7 +1089,7 @@ if("serviceWorker" in navigator&&/^https?:$/.test(location.protocol)){
    إن أتاح المتصفح التثبيت المباشر يفتح الزر نافذة التثبيت، وإلا (مثل آيفون) يعرض الزر طريقة التثبيت من قائمة المتصفح.
    إن أغلقها الطفل لا تعود حتى يُفتح التطبيق من جديد */
 const T0=Date.now();
-let installEvt=null,splashDone=false,insTimer=0;
+let installEvt=window.__bip||null,splashDone=false,insTimer=0;
 const isInstalled=()=>matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
 const insDismissed=()=>{try{return sessionStorage.getItem("ins-closed")==="1";}catch(e){return false;}};
 function scheduleInstall(){
@@ -1117,17 +1119,17 @@ window.addEventListener("beforeinstallprompt",e=>{
   installEvt=e;
 });
 $("insBtn").onclick=async()=>{
-  const p=installEvt;
+  const p=installEvt||window.__bip;
   if(!p){   // المتصفح لا يتيح التثبيت المباشر: نعرض الطريقة اليدوية
     const t=$("insTip");t.textContent=installTip();t.classList.remove("hide");
     return;
   }
   hideInstall();
-  installEvt=null;   // حدث التثبيت يُستخدم مرة واحدة
+  installEvt=window.__bip=null;   // حدث التثبيت يُستخدم مرة واحدة
   try{await p.prompt();const c=await p.userChoice;if(c&&c.outcome==="dismissed")closeInstall();}catch(e){}
 };
 $("install").onclick=e=>{if(e.target===$("install"))closeInstall();};
-window.addEventListener("appinstalled",()=>{installEvt=null;hideInstall();});
+window.addEventListener("appinstalled",()=>{installEvt=window.__bip=null;hideInstall();});
 
 /* ===== البداية ===== */
 fillIcons();

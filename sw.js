@@ -1,5 +1,5 @@
 /* يعمل التطبيق بلا إنترنت: تُخزَّن الملفات عند أول زيارة ثم تُقدَّم من الجهاز */
-const VERSION = 'v9';
+const VERSION = 'v10';
 const CACHE = 'harfi-' + VERSION;
 /* تسجيلات الحروف الـ 28 (تُحفظ عند التثبيت فتعمل دون إنترنت من أول مرة) */
 const LETTERS = ['01_Alef', '02_baa', '03_taa', '04_thaa', '05_geem', '06_haa', '07_khaa', '08_dal', '09_zal', '10_raa', '11_zay', '12_seen', '13_sheen', '14_sad', '15_dad', '16_taaa', '17_zaa', '18_ayn', '19_ghyn', '20_faa', '21_qaf', '22_kaf', '23_lam', '24_mem', '25_noon', '26_haa', '27_waw', '28_yaa'];
