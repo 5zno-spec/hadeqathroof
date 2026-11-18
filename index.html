@@ -283,6 +283,8 @@ main{max-width:600px;margin:0 auto}
 @keyframes insDrop{0%,100%{transform:translateY(-3px)}50%{transform:translateY(4px)}}
 @media(prefers-reduced-motion:reduce){.ins-btn,.ins-btn::before,.ins-btn .ic{animation:none}}
 .hint{color:var(--mut);font-size:1.1rem;margin-top:14px}
+/* إرشاد التثبيت اليدوي: يظهر تحت الزر فقط حين لا يتيح المتصفح التثبيت المباشر (مثل آيفون) */
+.ins-tip{margin:0;max-width:240px;font-family:var(--ui);font-size:1.05rem;line-height:1.6;color:var(--ink)}
 @media(max-width:380px){.pe{font-size:4rem}.mc{font-size:3rem}}
 </style>
 </head>
@@ -418,6 +420,7 @@ main{max-width:600px;margin:0 auto}
   <div class="ins">
     <img class="ins-logo" src="img/logo.webp" width="200" height="200" alt="أصدقائي الحروف">
     <button class="ins-btn" id="insBtn" aria-label="تثبيت التطبيق" title="تثبيت التطبيق"><span class="ic" data-ic="download"></span></button>
+    <p class="ins-tip hide" id="insTip" role="status"></p>
   </div>
 </div>
 
@@ -938,7 +941,7 @@ $("mAgain").onclick=openMini;
 $("mNext").onclick=toNext;
 document.addEventListener("keydown",e=>{
   if(e.key!=="Escape")return;
-  if(!$("install").classList.contains("hide"))hideInstall();
+  if(!$("install").classList.contains("hide"))closeInstall();
   else if(!$("ask").classList.contains("hide"))closeAsk();
   else if(!$("mini").classList.contains("hide"))closeMini();
 });
@@ -1080,16 +1083,20 @@ function renderAch(){
 if("serviceWorker" in navigator&&/^https?:$/.test(location.protocol)){
   window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
 }
-/* نافذة التثبيت: تظهر فور ظهور الرئيسية بعد شاشة التحميل،
-   فقط حين يسمح المتصفح بالتثبيت ولم يكن التطبيق مثبتًا */
+/* نافذة التثبيت: تظهر بعد ثانيتين من فتح اللعبة (بعد شاشة التحميل وعلى الرئيسية) ما لم يكن التطبيق مثبتًا.
+   إن أتاح المتصفح التثبيت المباشر يفتح الزر نافذة التثبيت، وإلا (مثل آيفون) يعرض الزر طريقة التثبيت من قائمة المتصفح.
+   إن أغلقها الطفل لا تعود حتى يُفتح التطبيق من جديد */
+const T0=Date.now();
 let installEvt=null,splashDone=false,insTimer=0;
 const isInstalled=()=>matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
+const insDismissed=()=>{try{return sessionStorage.getItem("ins-closed")==="1";}catch(e){return false;}};
 function scheduleInstall(){
   clearTimeout(insTimer);
-  if(installEvt&&splashDone&&curTab==="home"&&!isInstalled())insTimer=setTimeout(showInstall,350);
+  if(splashDone&&curTab==="home"&&!isInstalled()&&!insDismissed())insTimer=setTimeout(showInstall,Math.max(350,2000-(Date.now()-T0)));
 }
 function showInstall(){
-  if(!installEvt||isInstalled())return;
+  if(isInstalled()||curTab!=="home")return;
+  $("insTip").classList.add("hide");
   $("install").classList.remove("hide");
   $("insBtn").focus();
 }
@@ -1097,19 +1104,29 @@ function hideInstall(){
   clearTimeout(insTimer);
   $("install").classList.add("hide");
 }
+function closeInstall(){
+  hideInstall();
+  try{sessionStorage.setItem("ins-closed","1");}catch(e){}
+}
+function installTip(){
+  const ua=navigator.userAgent,ios=/iphone|ipad|ipod/i.test(ua)||(/macintosh/i.test(ua)&&navigator.maxTouchPoints>1);
+  return ios?"اضغط زر المشاركة في المتصفح ثم «إضافة إلى الشاشة الرئيسية»":"افتح قائمة المتصفح ⋮ ثم اختر «تثبيت التطبيق» أو «إضافة إلى الشاشة الرئيسية»";
+}
 window.addEventListener("beforeinstallprompt",e=>{
   e.preventDefault();   // نمنع شريط المتصفح الافتراضي ونعرض نافذتنا
   installEvt=e;
-  scheduleInstall();
 });
 $("insBtn").onclick=async()=>{
   const p=installEvt;
+  if(!p){   // المتصفح لا يتيح التثبيت المباشر: نعرض الطريقة اليدوية
+    const t=$("insTip");t.textContent=installTip();t.classList.remove("hide");
+    return;
+  }
   hideInstall();
-  if(!p)return;
   installEvt=null;   // حدث التثبيت يُستخدم مرة واحدة
-  try{await p.prompt();await p.userChoice;}catch(e){}
+  try{await p.prompt();const c=await p.userChoice;if(c&&c.outcome==="dismissed")closeInstall();}catch(e){}
 };
-$("install").onclick=e=>{if(e.target===$("install"))hideInstall();};
+$("install").onclick=e=>{if(e.target===$("install"))closeInstall();};
 window.addEventListener("appinstalled",()=>{installEvt=null;hideInstall();});
 
 /* ===== البداية ===== */
