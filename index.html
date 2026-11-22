@@ -264,7 +264,11 @@ main{max-width:600px;margin:0 auto}
 @keyframes logoFloat{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-9px) scale(1.03)}}
 .sp-track{width:min(64vw,260px);height:14px;border-radius:99px;background:#fff;border:1px solid var(--line);overflow:hidden}
 .sp-fill{width:100%;height:100%;border-radius:99px;background:linear-gradient(90deg,#e8413c 0 25%,#2ea6dd 25% 50%,#6dbe45 50% 75%,#f7c21a 75%);transform:scaleX(0);transform-origin:right;animation:spf 1.4s ease-out forwards}
-@media(prefers-reduced-motion:reduce){.sp-logo{animation:none}}
+/* شعار الشركة المبرمجة: صغير في أسفل منتصف شاشة التحميل */
+.sp-dev{position:absolute;left:50%;bottom:calc(22px + env(safe-area-inset-bottom));height:56px;width:auto;transform:translateX(-50%);opacity:0;animation:devIn .6s ease-out .5s forwards}
+@keyframes devIn{to{opacity:1}}
+@media(max-height:520px){.sp-dev{height:42px;bottom:calc(12px + env(safe-area-inset-bottom))}}
+@media(prefers-reduced-motion:reduce){.sp-logo{animation:none}.sp-dev{animation:none;opacity:1}}
 @keyframes spf{to{transform:scaleX(1)}}
 /* نافذة التثبيت */
 /* نافذة التثبيت الزجاجية: الشعار وزر التثبيت فقط؛ تُغلق بلمسة خارجها */
@@ -294,6 +298,7 @@ main{max-width:600px;margin:0 auto}
 <div id="splash" role="progressbar" aria-label="جارٍ التحميل" aria-valuemin="0" aria-valuemax="100">
   <img class="sp-logo" src="img/logo.webp" width="300" height="300" alt="أصدقائي الحروف" fetchpriority="high" decoding="sync">
   <div class="sp-track"><div class="sp-fill"></div></div>
+  <img class="sp-dev" src="img/dev-logo.png" width="40" height="56" alt="وقار">
 </div>
 <div class="bgl" id="bgl" aria-hidden="true"></div>
 
