@@ -263,7 +263,7 @@ main{max-width:600px;margin:0 auto}
 @keyframes logoIn{0%{transform:scale(.4) rotate(-8deg);opacity:0}60%{transform:scale(1.08) rotate(2deg);opacity:1}100%{transform:none;opacity:1}}
 @keyframes logoFloat{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-9px) scale(1.03)}}
 .sp-track{width:min(64vw,260px);height:14px;border-radius:99px;background:#fff;border:1px solid var(--line);overflow:hidden}
-.sp-fill{width:100%;height:100%;border-radius:99px;background:linear-gradient(90deg,#e8413c 0 25%,#2ea6dd 25% 50%,#6dbe45 50% 75%,#f7c21a 75%);transform:scaleX(0);transform-origin:right;animation:spf 1.4s ease-out forwards}
+.sp-fill{width:100%;height:100%;border-radius:99px;background:linear-gradient(90deg,#e8413c 0 25%,#2ea6dd 25% 50%,#6dbe45 50% 75%,#f7c21a 75%);transform:scaleX(0);transform-origin:right;animation:spf 3s ease-out forwards}
 /* شعار الشركة المبرمجة: صغير في أسفل منتصف شاشة التحميل */
 .sp-dev{position:absolute;left:50%;bottom:calc(22px + env(safe-area-inset-bottom));height:56px;width:auto;transform:translateX(-50%);opacity:0;animation:devIn .6s ease-out .5s forwards}
 @keyframes devIn{to{opacity:1}}
@@ -1142,7 +1142,7 @@ applyMute();
 setSection(curSec);
 pick(cur,true);
 show("home");
-/* شاشة التحميل: تبقى حتى يجهز الخط (حدّ أدنى ١٫٤ ثانية ليمتلئ الشريط، وحدّ أقصى ٤ ثوانٍ) ثم تظهر الرئيسية */
+/* شاشة التحميل: تبقى حتى يجهز الخط (حدّ أدنى ٣ ثوانٍ ليمتلئ الشريط، وحدّ أقصى ٤ ثوانٍ) ثم تظهر الرئيسية */
 (function(){
   const t0=Date.now();let gone=false;
   const hide=()=>{
@@ -1154,7 +1154,7 @@ show("home");
     scheduleInstall();
   };
   const ready=document.fonts&&document.fonts.ready?document.fonts.ready:Promise.resolve();
-  ready.then(()=>setTimeout(hide,Math.max(0,1400-(Date.now()-t0))));
+  ready.then(()=>setTimeout(hide,Math.max(0,3000-(Date.now()-t0))));
   setTimeout(hide,4000);
 })();
 </script>
